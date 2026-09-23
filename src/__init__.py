@@ -1,1 +1,1 @@
-"""EcomAgent application package; implementation starts in later phases."""
+"""EcomAgent application package. Phase 2 provides local data services."""

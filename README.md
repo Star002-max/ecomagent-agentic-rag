@@ -1,6 +1,6 @@
 # EcomAgent
 
-基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。当前仅完成 Phase 1：项目初始化、模拟数据设计、生成与验证。项目用于学习和面试展示，所有数据均为人工设计的模拟数据，不代表真实商家经营情况。
+基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。当前已完成 Phase 1 数据基础和 Phase 2 Pandas 查询服务。项目用于学习和面试展示，所有数据均为人工设计的模拟数据，不代表真实商家经营情况。
 
 V1 业务范围只有商品、销售、库存、评价。LangChain Agent、Tool Calling、RAG、ChromaDB、Memory、Streamlit 是后续阶段目标，当前没有实现，也没有安装相应依赖。
 
@@ -9,31 +9,34 @@ V1 业务范围只有商品、销售、库存、评价。LangChain Agent、Tool 
 - 15 个 SKU，180 天每日销售和库存记录。
 - 四份 CSV：商品15行、销售2700行、库存2700行、评价5400行。
 - 固定随机种子42、固定截止日2026-09-22，可复现生成结果。
-- 独立 CSV 校验脚本、11个自动化测试，以及15个SKU的比较证据。
+- 独立 CSV 校验脚本、38个自动化测试（Phase 1共11个，Phase 2新增27个），以及15个SKU的比较证据。
 - 五个明确场景和十个正常对照商品，具体见 [数据设计](docs/mock_data_design.md)。
+- 商品、销售、周期比较、库存、评价的普通Python查询函数；区分未知商品、无数据、部分数据和数值零。
+- [Phase 2阶段报告](docs/phase2_report.md)：接口、执行流程、设计问题、测试、阅读顺序及带参考答案的练习。
 
 ## 运行
 
-先进入本 README 所在的 `ecom-agent` 文件夹。建议使用独立虚拟环境；当前代码可在 Python 3.9 及以上运行，本机已验证 Python 3.9.6、Pandas 2.3.3。
+先进入本 README 所在的 `ecom-agent` 文件夹。当前开发与验证环境为独立虚拟环境中的 Python 3.12.10、Pandas 2.3.3；Phase 2类型注解使用Python 3.10及以上语法，建议沿用已验证的3.12环境。
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m scripts.validate_mock_data
+python -m scripts.demo_services
 python -m unittest discover -s tests -v
 ```
 
 Windows 激活命令为 `.venv\Scripts\activate`。创建环境和安装依赖只需首次进行。安装依赖需要网络；验证和数据生成完全离线，无需 API Key。
 
-本机同时存在 Python 3.9 与 Python 3.12，其中已装有 Pandas 的3.9环境可以直接运行：
+本机已存在PyCharm项目虚拟环境，无需重新创建或安装，直接运行：
 
 ```bash
-/usr/bin/python3 -m scripts.validate_mock_data
-/usr/bin/python3 -m unittest discover -s tests -v
+.venv/bin/python -m scripts.demo_services
+.venv/bin/python -m unittest discover -s tests -v
 ```
 
-这两个绝对路径命令仅用于当前这台 Mac，不是其他电脑的通用要求。
+请不要再使用系统的Python 3.9运行Phase 2。PyCharm中选择本项目 `.venv/bin/python`；其他平台按实际环境选择解释器。
 
 ## 重建数据
 
@@ -55,7 +58,7 @@ python -m scripts.validate_mock_data --data-dir work/sample
 
 ## 预期结果
 
-验证命令打印 `PASS：四表结构、180天完整性、指标口径、库存及15个SKU现象全部通过。`，随后输出15行比较结果。测试命令显示 `Ran 11 tests` 和 `OK`。
+Phase 1验证命令打印 `PASS：四表结构、180天完整性、指标口径、库存及15个SKU现象全部通过。`。服务演示打印JSON，包括SKU001销售、SKU002两期比较、SKU003库存、SKU005评价及缺失数据示例。全部测试显示 `Ran 38 tests` 和 `OK`。
 
 比较基准来自数据截止日而不是电脑当天日期。默认最近30天是2026-08-24至2026-09-22；之前30天是2026-07-25至2026-08-23，两个窗口均包含首尾日期，互不重叠。
 
@@ -64,12 +67,13 @@ python -m scripts.validate_mock_data --data-dir work/sample
 ```text
 data/                  四份CSV和生成参数清单
 scripts/               生成与独立验证脚本
-src/__init__.py         后续应用代码入口包，当前无业务实现
-tests/test_phase1.py    数据与口径测试
+src/services/          Pandas数据加载及五类查询服务
+tests/                 Phase 1数据测试与Phase 2服务测试
 docs/                  设计、口径、运行结果及阶段讲解
 requirements.txt       当前唯一直接依赖 Pandas
 .env.example           说明本阶段不需要密钥
 .gitignore             排除环境、缓存及真实密钥
+AGENTS.md              后续阶段固定协作与提交规则
 ```
 
 - [数据设计与每个SKU的预设现象](docs/mock_data_design.md)
@@ -88,11 +92,11 @@ requirements.txt       当前唯一直接依赖 Pandas
 
 ## Git 阶段提交
 
-项目已初始化本地 Git 仓库，尚未自动提交、创建远程仓库或上传。理解并验证本阶段后，可创建第一笔提交：
+Phase 1已由用户提交：`2e10cd1 feat: initialize product mock dataset`。Phase 2尚未提交；提交前须用户确认。理解并验证后，建议使用：
 
 ```bash
-git add README.md requirements.txt .gitignore .env.example data scripts src tests docs
-git commit -m "feat: initialize product mock dataset"
+git add AGENTS.md README.md src scripts/demo_services.py tests/test_services.py docs/phase2_report.md
+git commit -m "feat: implement pandas product data services"
 ```
 
-本阶段结束后停止。只有确认“这一阶段已经理解并运行成功”并要求继续，才进入 Phase 2。
+本阶段结束后停止。只有确认“这一阶段已经理解并运行成功”并要求继续，才进入 Phase 3。以上Git命令为建议，不代表已经执行。
