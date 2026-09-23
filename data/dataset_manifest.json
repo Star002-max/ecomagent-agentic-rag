@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "seed": 42,
+  "start_date": "2026-03-27",
+  "end_date": "2026-09-22",
+  "days": 180,
+  "sku_count": 15,
+  "recent_days": 30,
+  "currency": "CNY",
+  "pandas_version": "2.3.3",
+  "rows": {
+    "products": 15,
+    "sales": 2700,
+    "inventory": 2700,
+    "reviews": 5400
+  }
+}
