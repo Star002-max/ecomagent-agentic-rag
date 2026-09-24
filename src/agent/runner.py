@@ -8,6 +8,8 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, Tool
 from langchain_core.tools import StructuredTool
 from langsmith import tracing_context
 
+from src.models import AnalysisReport, StructuredOutputError, parse_analysis_report
+from src.prompts.analysis import analysis_structure_repair_prompt, analysis_system_prompt
 from src.prompts.basic import system_prompt
 from src.tools import describe_tools
 from src.tools.results import result_json
@@ -25,6 +27,7 @@ class AgentResult:
     answer: str
     model_calls: int
     tool_calls: list[dict]
+    structured_output: dict | None = None
 
 
 def final_text(message: AIMessage) -> str:
@@ -58,12 +61,25 @@ class ProductAgent:
 
     def run(self, question: str) -> AgentResult:
         """Execute model-selected calls, returning facts and compact audit data."""
+        return self._run(question, system_prompt(self._as_of_date))
+
+    def run_analysis(self, question: str) -> AgentResult:
+        """Run the same loop and validate the final answer as AnalysisReport."""
+        return self._run(question, analysis_system_prompt(self._as_of_date),
+                         output_model=AnalysisReport, require_tool=True)
+
+    def _run(self, question: str, prompt: str, *,
+             output_model: type[AnalysisReport] | None = None,
+             require_tool: bool = False) -> AgentResult:
+        """Shared bounded loop; output validation never performs calculations."""
         if not isinstance(question, str) or not question.strip():
             raise ValueError("问题不能为空。")
-        messages = [SystemMessage(content=system_prompt(self._as_of_date)),
+        messages = [SystemMessage(content=prompt),
                     HumanMessage(content=question.strip())]
         trace: list[dict] = []
         seen_ids: set[str] = set()
+        structure_repairs = 0
+        awaiting_structure_repair = False
         # Explicitly disable external tracing even if the shell enabled it.
         with tracing_context(enabled=False):
             for number in range(1, self._max_model_calls + 1):
@@ -82,9 +98,31 @@ class ProductAgent:
                     answer = final_text(response)
                     if not answer:
                         raise AgentExecutionError("模型未返回工具调用或可见答案。")
-                    return AgentResult("completed", redact(answer, self._secret), number, trace)
+                    if require_tool and not any(
+                        item["execution_status"] == "success" for item in trace
+                    ):
+                        raise AgentExecutionError("综合分析未成功执行任何业务工具，任务未完成。")
+                    safe_answer = redact(answer, self._secret)
+                    structured = None
+                    if output_model is not None:
+                        try:
+                            report = parse_analysis_report(safe_answer)
+                        except StructuredOutputError as exc:
+                            if structure_repairs >= 1:
+                                raise AgentExecutionError(str(exc)) from None
+                            structure_repairs += 1
+                            awaiting_structure_repair = True
+                            messages.append(HumanMessage(
+                                content=analysis_structure_repair_prompt(str(exc))
+                            ))
+                            continue
+                        structured = report.model_dump(mode="json")
+                        safe_answer = report.model_dump_json()
+                    return AgentResult("completed", safe_answer, number, trace, structured)
                 if len(trace) + len(response.tool_calls) > self._max_tool_calls:
                     return AgentResult("limit_reached", "达到工具调用上限，任务未完成。", number, trace)
+                if awaiting_structure_repair:
+                    raise AgentExecutionError("结构修正阶段不应再次调用工具，任务已停止。")
                 # Validate the batch before executing any of it.
                 batch_ids = []
                 for call in response.tool_calls:

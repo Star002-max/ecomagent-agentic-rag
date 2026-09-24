@@ -1,21 +1,23 @@
 # EcomAgent
 
-基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。当前已完成Phase 1至Phase 4：模拟数据、Pandas服务、Tools与接入真实Qwen的基础工具调用循环。项目用于学习和面试展示，所有数据均为模拟数据，不代表真实商家经营情况。
+基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。当前已完成Phase 1至Phase 5：模拟数据、Pandas服务、Tools、真实Qwen工具调用循环、Multi-Tool综合分析和简单Structured Output。项目用于学习和面试展示，所有数据均为模拟数据，不代表真实商家经营情况。
 
-V1业务范围只有商品、销售、库存、评价。模型根据问题从5个StructuredTool中选择工具，应用执行并回传结果后生成答案。已验证基础查询、两期比较和不存在商品；没有实现复杂诊断、RAG、ChromaDB、跨问题Memory或Streamlit，也没有使用LangGraph。
+V1业务范围只有商品、销售、库存、评价。模型根据问题从5个StructuredTool中选择一个或多个工具，应用执行并回传结果后生成答案。综合分析使用Pydantic校验最终JSON；没有实现RAG、ChromaDB、跨问题Memory或Streamlit，也没有使用LangGraph。
 
 ## 当前交付
 
 - 15 个 SKU，180 天每日销售和库存记录。
 - 四份 CSV：商品15行、销售2700行、库存2700行、评价5400行。
 - 固定随机种子42、固定截止日2026-09-22，可复现生成结果。
-- 82个离线测试（前3阶段57个，Phase 4新增25个），另有4个显式真实API验收用例及15个SKU的模拟数据比较证据。
+- 97个离线测试，另有各阶段显式真实API验收记录及15个SKU的模拟数据比较证据。
 - 五个明确场景和十个正常对照商品，具体见 [数据设计](docs/mock_data_design.md)。
 - 商品、销售、周期比较、库存、评价的普通Python查询函数；区分未知商品、无数据、部分数据和数值零。
 - [Phase 2阶段报告](docs/phase2_report.md)：接口、执行流程、设计问题、测试、阅读顺序及带参考答案的练习。
 - [Phase 3阶段报告](docs/phase3_report.md)：普通函数与Tool的区别、名称/描述/schema、调用与返回、实际Bug和参考答案。
 - [Phase 4阶段报告](docs/phase4_report.md)：真实连接、模型选工具、消息往返、错误与安全处理、阅读顺序及参考答案。
 - [Phase 4真实验收记录](docs/phase4_live_results.json)：模型实际选择的工具、参数、数据和答案，无密钥或内部推理内容。
+- [Phase 5阶段报告](docs/phase5_report.md)：Multi-Tool流程、Structured Output、测试、问题记录和练习答案。
+- [Phase 5真实验收记录](docs/phase5_live_results.json)：SKU001和SKU005的工具证据与结构化结果。
 - [工具定义快照](docs/tool_catalog.json)：可查看后续模型将接收的工具名称、用途和JSON参数schema，不含数据对象或文件路径。
 
 ## 运行
@@ -40,13 +42,14 @@ Windows激活命令为 `.venv\Scripts\activate`。数据生成、服务与工具
 ```bash
 .venv/bin/python -m scripts.run_agent "SKU003现在有多少库存？" --show-tools
 .venv/bin/python -m scripts.run_agent "比较SKU002最近30天和之前30天的销售表现。" --show-tools
+.venv/bin/python -m scripts.run_analysis "分析SKU005最近30天的销售和评论变化，有什么值得关注的问题？" --show-tools
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python -m scripts.check_secrets
 ```
 
 PyCharm选择本项目 `.venv/bin/python`，运行模块scripts.run_agent，工作目录设为项目根目录。每次运行是独立问题，不保存上次聊天。数据截止日固定为2026-09-22，不使用电脑当天。
 
-重新执行真实集成验收用 `.venv/bin/python -m scripts.verify_agent_live`，会产生API请求并更新验收记录。模型请求失败时停止，不自动重试或替换服务。服务端要求HTTPS，本地配置已采用同一接口的HTTPS地址。
+Phase 4真实验收使用 `.venv/bin/python -m scripts.verify_agent_live`；Phase 5使用 `.venv/bin/python -m scripts.verify_analysis_live`。真实验收会产生API请求并更新记录，不应混入日常离线测试。模型请求失败时停止，不自动替换服务。
 
 ## 重建数据
 
@@ -68,7 +71,7 @@ python -m scripts.validate_mock_data --data-dir work/sample
 
 ## 预期结果
 
-Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent实际调用模型，show-tools打印模型选中的工具及状态。全部离线测试显示 `Ran 82 tests`、`OK`；真实验收另行运行，不混入离线测试数量。
+Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent和run_analysis实际调用模型，show-tools打印模型选中的工具及状态。全部离线测试显示 `Ran 97 tests`、`OK`；真实验收另行运行。
 
 比较基准来自数据截止日而不是电脑当天日期。默认最近30天是2026-08-24至2026-09-22；之前30天是2026-07-25至2026-08-23，两个窗口均包含首尾日期，互不重叠。
 
@@ -80,7 +83,8 @@ scripts/               生成与独立验证脚本
 src/services/          Pandas数据加载及五类查询服务
 src/tools/             参数schema、工具工厂和返回封装
 src/agent/             基础模型适配与Tool Calling Loop
-src/prompts/           当前阶段基础提示词
+src/prompts/           基础与综合分析提示词
+src/models/            最终结构化输出模型（不含业务计算）
 src/config.py          本地配置读取
 tests/                 数据、服务、工具、循环与安全的离线测试
 docs/                  设计、口径、运行结果及阶段讲解
@@ -110,12 +114,4 @@ AGENTS.md              后续阶段固定协作与提交规则
 
 ## Git 阶段提交
 
-前3阶段已提交：Phase 1为2e10cd1、Phase 2为279c627、Phase 3为6a55137。Phase 4尚未提交。提交前先运行check_secrets并核对Git Status和Diff；只有用户明确确认后再提交。建议：
-
-```bash
-.venv/bin/python -m scripts.check_secrets
-git add README.md requirements.txt .env.example src/config.py src/agent src/prompts scripts/run_agent.py scripts/verify_agent_live.py scripts/check_secrets.py tests/test_agent.py docs/phase4_report.md docs/phase4_live_results.json
-git commit -m "feat: build qwen tool calling agent"
-```
-
-以上命令为建议，不代表已执行。不要使用git add -f添加.env。本阶段结束后停止，等待用户验收；Phase 5与Git Commit均需明确授权。
+Phase 1至Phase 4及项目级Skill已提交。Phase 5尚未提交。提交前先运行check_secrets并核对Git Status和Diff；只有用户明确确认后再提交，不要使用`git add -f`添加`.env`。Phase 5建议Commit Message：`feat: add multi-tool structured product analysis`。

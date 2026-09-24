@@ -1,0 +1,411 @@
+{
+  "tested_at_utc": "2026-09-24T11:03:41.632618+00:00",
+  "model": "qwen3.7-plus",
+  "data_as_of": "2026-09-22",
+  "mode": "real_api",
+  "status": "passed",
+  "cases": [
+    {
+      "case": "sku001_sales",
+      "question": "分析SKU001最近30天表现，销量下降主要体现在哪些指标？",
+      "status": "completed",
+      "answer": "{\"sku\":\"SKU001\",\"summary\":\"SKU001最近30天（2026-08-24至2026-09-22）相比之前30天（2026-07-25至2026-08-23），销量下降34.3%，订单下降34.7%，访问量下降35.0%，但转化率基本稳定。销量下降与访问量下降幅度相近，转化率未出现明显恶化。\",\"findings\":[\"销量（units）从1833件下降至1205件，减少628件，相对下降34.3%\",\"订单数（orders）从1672单下降至1092单，减少580单，相对下降34.7%\",\"访问量（sessions）从28021次下降至18226次，减少9795次，相对下降35.0%\",\"转化率从5.97%微增至5.99%，变化+0.024个百分点，基本保持稳定\",\"销售额从73136.7下降至48079.5，减少25057.2，相对下降34.3%\",\"两期数据均为完整30天，coverage为true\"],\"risk_level\":\"medium\",\"recommendations\":[\"访问量与销量同期下降且幅度相近，建议检查流量来源变化，如搜索排名、广告投放或活动曝光等\",\"转化率保持稳定，说明商品本身转化能力未明显恶化，可继续监控\",\"如需进一步分析，可查询评价数据确认是否存在评分或差评变化\"],\"evidence_limits\":[\"当前数据不能证明访问量下降的具体原因（如季节性、竞争、营销变化等）\",\"同期变化只代表关联，不能确认因果关系\",\"未查询流量来源、广告投放或外部市场数据，无法归因于具体因素\"]}",
+      "model_calls": 2,
+      "tool_calls": [
+        {
+          "id": "call_0ed33b4e913c4e92accaa28b",
+          "name": "compare_sales_periods",
+          "arguments": {
+            "sku": "SKU001",
+            "current_start": "2026-08-24",
+            "current_end": "2026-09-22",
+            "previous_start": "2026-07-25",
+            "previous_end": "2026-08-23"
+          },
+          "execution_status": "success",
+          "result": {
+            "schema_version": "1.0",
+            "tool": "compare_sales_periods",
+            "status": "ok",
+            "data": {
+              "sku": "SKU001",
+              "current": {
+                "status": "ok",
+                "sku": "SKU001",
+                "message": "",
+                "start_date": "2026-08-24",
+                "end_date": "2026-09-22",
+                "metrics": {
+                  "orders": 1092,
+                  "units": 1205,
+                  "revenue": 48079.5,
+                  "sessions": 18226,
+                  "conversion_rate": 0.05991440798858773
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 36.4,
+                  "units": 40.166666666666664,
+                  "revenue": 1602.65,
+                  "sessions": 607.5333333333333
+                }
+              },
+              "previous": {
+                "status": "ok",
+                "sku": "SKU001",
+                "message": "",
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "orders": 1672,
+                  "units": 1833,
+                  "revenue": 73136.7,
+                  "sessions": 28021,
+                  "conversion_rate": 0.05966953356411263
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 55.733333333333334,
+                  "units": 61.1,
+                  "revenue": 2437.89,
+                  "sessions": 934.0333333333333
+                }
+              },
+              "changes": {
+                "orders": {
+                  "absolute_change": -580,
+                  "relative_change": -0.34688995215311,
+                  "relative_change_reason": null
+                },
+                "units": {
+                  "absolute_change": -628,
+                  "relative_change": -0.342607746863066,
+                  "relative_change_reason": null
+                },
+                "revenue": {
+                  "absolute_change": -25057.199999999997,
+                  "relative_change": -0.342607746863066,
+                  "relative_change_reason": null
+                },
+                "sessions": {
+                  "absolute_change": -9795,
+                  "relative_change": -0.34955925912708324,
+                  "relative_change_reason": null
+                },
+                "conversion_rate": {
+                  "absolute_change": 0.0002448744244751,
+                  "relative_change": 0.004103843449890417,
+                  "relative_change_reason": null
+                }
+              },
+              "warnings": [],
+              "status": "ok",
+              "conversion_rate_percentage_point_change": 0.02448744244751
+            },
+            "error": null
+          }
+        }
+      ],
+      "structured_output": {
+        "sku": "SKU001",
+        "summary": "SKU001最近30天（2026-08-24至2026-09-22）相比之前30天（2026-07-25至2026-08-23），销量下降34.3%，订单下降34.7%，访问量下降35.0%，但转化率基本稳定。销量下降与访问量下降幅度相近，转化率未出现明显恶化。",
+        "findings": [
+          "销量（units）从1833件下降至1205件，减少628件，相对下降34.3%",
+          "订单数（orders）从1672单下降至1092单，减少580单，相对下降34.7%",
+          "访问量（sessions）从28021次下降至18226次，减少9795次，相对下降35.0%",
+          "转化率从5.97%微增至5.99%，变化+0.024个百分点，基本保持稳定",
+          "销售额从73136.7下降至48079.5，减少25057.2，相对下降34.3%",
+          "两期数据均为完整30天，coverage为true"
+        ],
+        "risk_level": "medium",
+        "recommendations": [
+          "访问量与销量同期下降且幅度相近，建议检查流量来源变化，如搜索排名、广告投放或活动曝光等",
+          "转化率保持稳定，说明商品本身转化能力未明显恶化，可继续监控",
+          "如需进一步分析，可查询评价数据确认是否存在评分或差评变化"
+        ],
+        "evidence_limits": [
+          "当前数据不能证明访问量下降的具体原因（如季节性、竞争、营销变化等）",
+          "同期变化只代表关联，不能确认因果关系",
+          "未查询流量来源、广告投放或外部市场数据，无法归因于具体因素"
+        ]
+      },
+      "checks": [
+        "结构化输出通过",
+        "必要工具调用成功",
+        "关键事实与证据限制通过"
+      ]
+    },
+    {
+      "case": "sku005_sales_reviews",
+      "question": "分析SKU005最近30天的销售和评论变化，有什么值得关注的问题？",
+      "status": "completed",
+      "answer": "{\"sku\":\"SKU005\",\"summary\":\"SKU005在最近30天（2026-08-24至2026-09-22）相比之前30天（2026-07-25至2026-08-23），销量下降约40%，转化率从5.99%降至3.61%，而访问量基本持平。同时，平均评分从4.68骤降至2.1，低分评价从0条激增至47条，评价内容集中反映做工质量问题。销售下滑与评分恶化同期发生，需重点关注产品质量状况。\",\"findings\":[\"最近30天订单1,164单，较之前30天的1,934单减少770单，相对下降39.8%（compare_sales_periods）\",\"最近30天销量1,276件，较之前30天的2,130件减少854件，相对下降40.1%（compare_sales_periods）\",\"最近30天访问量32,276次，与之前30天的32,258次基本持平，变化仅+0.06%（compare_sales_periods）\",\"转化率从5.99%降至3.61%，下降2.39个百分点，相对下降39.8%（compare_sales_periods）\",\"最近30天平均评分2.1分，较之前30天的4.68分下降2.58分（get_review_data）\",\"最近30天低分评价（1-2分）47条，之前30天为0条，占最近30天60条评价的78%（get_review_data）\",\"低分评价内容高度一致，均提及做工问题（get_review_data）\"],\"risk_level\":\"high\",\"recommendations\":[\"立即排查SKU005近期批次是否存在做工或质量异常，核实供应链和生产环节\",\"对近期低分评价用户进行回访，收集具体质量问题细节以确认问题范围\",\"评估是否需要暂停销售或下架，防止更多消费者收到问题商品\",\"持续监控后续30天的评分和销量趋势，观察质量改善措施的效果\"],\"evidence_limits\":[\"销售下滑与评分恶化同期发生，但现有数据无法证明两者之间的因果关系\",\"低分评价文本高度相似，无法排除集中刷评或模板化反馈的可能性\",\"无法确认质量问题是否由特定批次、供应商变更或其他因素引起\",\"访问量持平但转化率下降，无法据此判断是商品页面变化、价格调整还是评价影响所致\",\"评价数据按已有记录统计，不能据此证明采集完整\"]}",
+      "model_calls": 3,
+      "tool_calls": [
+        {
+          "id": "call_8b4d7b92ead14446b66d092c",
+          "name": "compare_sales_periods",
+          "arguments": {
+            "sku": "SKU005",
+            "current_start": "2026-08-24",
+            "current_end": "2026-09-22",
+            "previous_start": "2026-07-25",
+            "previous_end": "2026-08-23"
+          },
+          "execution_status": "success",
+          "result": {
+            "schema_version": "1.0",
+            "tool": "compare_sales_periods",
+            "status": "ok",
+            "data": {
+              "sku": "SKU005",
+              "current": {
+                "status": "ok",
+                "sku": "SKU005",
+                "message": "",
+                "start_date": "2026-08-24",
+                "end_date": "2026-09-22",
+                "metrics": {
+                  "orders": 1164,
+                  "units": 1276,
+                  "revenue": 45808.4,
+                  "sessions": 32276,
+                  "conversion_rate": 0.03606394844466477
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 38.8,
+                  "units": 42.53333333333333,
+                  "revenue": 1526.9466666666667,
+                  "sessions": 1075.8666666666666
+                }
+              },
+              "previous": {
+                "status": "ok",
+                "sku": "SKU005",
+                "message": "",
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "orders": 1934,
+                  "units": 2130,
+                  "revenue": 76467.0,
+                  "sessions": 32258,
+                  "conversion_rate": 0.05995411990823982
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 64.46666666666667,
+                  "units": 71.0,
+                  "revenue": 2548.9,
+                  "sessions": 1075.2666666666667
+                }
+              },
+              "changes": {
+                "orders": {
+                  "absolute_change": -770,
+                  "relative_change": -0.3981385729058945,
+                  "relative_change_reason": null
+                },
+                "units": {
+                  "absolute_change": -854,
+                  "relative_change": -0.40093896713615024,
+                  "relative_change_reason": null
+                },
+                "revenue": {
+                  "absolute_change": -30658.6,
+                  "relative_change": -0.40093896713615024,
+                  "relative_change_reason": null
+                },
+                "sessions": {
+                  "absolute_change": 18,
+                  "relative_change": 0.000558001116002232,
+                  "relative_change_reason": null
+                },
+                "conversion_rate": {
+                  "absolute_change": -0.023890171463575048,
+                  "relative_change": -0.3984742249596711,
+                  "relative_change_reason": null
+                }
+              },
+              "warnings": [],
+              "status": "ok",
+              "conversion_rate_percentage_point_change": -2.3890171463575047
+            },
+            "error": null
+          }
+        },
+        {
+          "id": "call_2deb9c6c90584fe99768700e",
+          "name": "get_review_data",
+          "arguments": {
+            "sku": "SKU005",
+            "start_date": "2026-08-24",
+            "end_date": "2026-09-22",
+            "low_rating_limit": 10
+          },
+          "execution_status": "success",
+          "result": {
+            "schema_version": "1.0",
+            "tool": "get_review_data",
+            "status": "ok",
+            "data": {
+              "status": "ok",
+              "sku": "SKU005",
+              "message": "",
+              "start_date": "2026-08-24",
+              "end_date": "2026-09-22",
+              "metrics": {
+                "review_count": 60,
+                "average_rating": 2.1,
+                "low_rating_count": 47
+              },
+              "previous": {
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "review_count": 60,
+                  "average_rating": 4.683333333333334,
+                  "low_rating_count": 0
+                },
+                "within_observed_source_span": true
+              },
+              "rating_change": -2.5833333333333335,
+              "low_rating_reviews": [
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-20",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU005",
+                  "rating": 1,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-18",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-17",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-16",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-16",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-15",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                }
+              ],
+              "source": "reviews.csv",
+              "observed_source_start": "2026-03-27",
+              "observed_source_end": "2026-09-22",
+              "within_observed_source_span": true,
+              "comparison_status": "ok",
+              "low_rating_reviews_truncated": true,
+              "limitations": [
+                "按已有评价记录统计；没有评价不等于零分，也不能据此证明采集完整。"
+              ]
+            },
+            "error": null
+          }
+        }
+      ],
+      "structured_output": {
+        "sku": "SKU005",
+        "summary": "SKU005在最近30天（2026-08-24至2026-09-22）相比之前30天（2026-07-25至2026-08-23），销量下降约40%，转化率从5.99%降至3.61%，而访问量基本持平。同时，平均评分从4.68骤降至2.1，低分评价从0条激增至47条，评价内容集中反映做工质量问题。销售下滑与评分恶化同期发生，需重点关注产品质量状况。",
+        "findings": [
+          "最近30天订单1,164单，较之前30天的1,934单减少770单，相对下降39.8%（compare_sales_periods）",
+          "最近30天销量1,276件，较之前30天的2,130件减少854件，相对下降40.1%（compare_sales_periods）",
+          "最近30天访问量32,276次，与之前30天的32,258次基本持平，变化仅+0.06%（compare_sales_periods）",
+          "转化率从5.99%降至3.61%，下降2.39个百分点，相对下降39.8%（compare_sales_periods）",
+          "最近30天平均评分2.1分，较之前30天的4.68分下降2.58分（get_review_data）",
+          "最近30天低分评价（1-2分）47条，之前30天为0条，占最近30天60条评价的78%（get_review_data）",
+          "低分评价内容高度一致，均提及做工问题（get_review_data）"
+        ],
+        "risk_level": "high",
+        "recommendations": [
+          "立即排查SKU005近期批次是否存在做工或质量异常，核实供应链和生产环节",
+          "对近期低分评价用户进行回访，收集具体质量问题细节以确认问题范围",
+          "评估是否需要暂停销售或下架，防止更多消费者收到问题商品",
+          "持续监控后续30天的评分和销量趋势，观察质量改善措施的效果"
+        ],
+        "evidence_limits": [
+          "销售下滑与评分恶化同期发生，但现有数据无法证明两者之间的因果关系",
+          "低分评价文本高度相似，无法排除集中刷评或模板化反馈的可能性",
+          "无法确认质量问题是否由特定批次、供应商变更或其他因素引起",
+          "访问量持平但转化率下降，无法据此判断是商品页面变化、价格调整还是评价影响所致",
+          "评价数据按已有记录统计，不能据此证明采集完整"
+        ]
+      },
+      "checks": [
+        "结构化输出通过",
+        "必要工具调用成功",
+        "关键事实与证据限制通过"
+      ]
+    }
+  ],
+  "planned_questions": 2,
+  "total_model_calls": 5,
+  "total_tool_calls": 3
+}
