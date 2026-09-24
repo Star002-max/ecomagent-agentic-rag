@@ -1,0 +1,425 @@
+{
+  "tested_at_utc": "2026-09-24T07:17:40.708561+00:00",
+  "model": "qwen3.7-plus",
+  "data_as_of": "2026-09-22",
+  "mode": "real_api",
+  "cases": [
+    {
+      "case": "inventory",
+      "question": "SKU003现在有多少库存？",
+      "status": "completed",
+      "answer": "**SKU003 库存情况**\n\n- **当前库存**：50 件（截至 2026-09-22）\n- **库存趋势**：下降（过去30天从 2287 件降至 50 件，净减少 2237 件）\n- **日均销量**：约 77.07 件/天\n- **预估可售天数**：约 0.65 天（不足1天）\n\n⚠️ **风险提示**：按当前日均销量估算，SKU003 库存已严重不足，预计不到1天即可能断货。建议尽快补货。",
+      "model_calls": 2,
+      "tool_calls": [
+        {
+          "id": "call_da1258d6cf6e401696b8ab8c",
+          "name": "get_inventory_data",
+          "arguments": {
+            "sku": "SKU003"
+          },
+          "execution_status": "success",
+          "result": {
+            "schema_version": "1.0",
+            "tool": "get_inventory_data",
+            "status": "ok",
+            "data": {
+              "status": "ok",
+              "sku": "SKU003",
+              "message": "",
+              "start_date": "2026-08-24",
+              "end_date": "2026-09-22",
+              "current_inventory": 50,
+              "current_inventory_date": "2026-09-22",
+              "inventory_change": -2237,
+              "trend": "down",
+              "history": [
+                {
+                  "date": "2026-08-24",
+                  "sku": "SKU003",
+                  "inventory": 2287
+                },
+                {
+                  "date": "2026-08-25",
+                  "sku": "SKU003",
+                  "inventory": 2211
+                },
+                {
+                  "date": "2026-08-26",
+                  "sku": "SKU003",
+                  "inventory": 2139
+                },
+                {
+                  "date": "2026-08-27",
+                  "sku": "SKU003",
+                  "inventory": 2066
+                },
+                {
+                  "date": "2026-08-28",
+                  "sku": "SKU003",
+                  "inventory": 1995
+                },
+                {
+                  "date": "2026-08-29",
+                  "sku": "SKU003",
+                  "inventory": 1923
+                },
+                {
+                  "date": "2026-08-30",
+                  "sku": "SKU003",
+                  "inventory": 1848
+                },
+                {
+                  "date": "2026-08-31",
+                  "sku": "SKU003",
+                  "inventory": 1772
+                },
+                {
+                  "date": "2026-09-01",
+                  "sku": "SKU003",
+                  "inventory": 1697
+                },
+                {
+                  "date": "2026-09-02",
+                  "sku": "SKU003",
+                  "inventory": 1621
+                },
+                {
+                  "date": "2026-09-03",
+                  "sku": "SKU003",
+                  "inventory": 1544
+                },
+                {
+                  "date": "2026-09-04",
+                  "sku": "SKU003",
+                  "inventory": 1466
+                },
+                {
+                  "date": "2026-09-05",
+                  "sku": "SKU003",
+                  "inventory": 1387
+                },
+                {
+                  "date": "2026-09-06",
+                  "sku": "SKU003",
+                  "inventory": 1310
+                },
+                {
+                  "date": "2026-09-07",
+                  "sku": "SKU003",
+                  "inventory": 1233
+                },
+                {
+                  "date": "2026-09-08",
+                  "sku": "SKU003",
+                  "inventory": 1158
+                },
+                {
+                  "date": "2026-09-09",
+                  "sku": "SKU003",
+                  "inventory": 1077
+                },
+                {
+                  "date": "2026-09-10",
+                  "sku": "SKU003",
+                  "inventory": 1000
+                },
+                {
+                  "date": "2026-09-11",
+                  "sku": "SKU003",
+                  "inventory": 921
+                },
+                {
+                  "date": "2026-09-12",
+                  "sku": "SKU003",
+                  "inventory": 841
+                },
+                {
+                  "date": "2026-09-13",
+                  "sku": "SKU003",
+                  "inventory": 765
+                },
+                {
+                  "date": "2026-09-14",
+                  "sku": "SKU003",
+                  "inventory": 688
+                },
+                {
+                  "date": "2026-09-15",
+                  "sku": "SKU003",
+                  "inventory": 611
+                },
+                {
+                  "date": "2026-09-16",
+                  "sku": "SKU003",
+                  "inventory": 530
+                },
+                {
+                  "date": "2026-09-17",
+                  "sku": "SKU003",
+                  "inventory": 447
+                },
+                {
+                  "date": "2026-09-18",
+                  "sku": "SKU003",
+                  "inventory": 369
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU003",
+                  "inventory": 291
+                },
+                {
+                  "date": "2026-09-20",
+                  "sku": "SKU003",
+                  "inventory": 210
+                },
+                {
+                  "date": "2026-09-21",
+                  "sku": "SKU003",
+                  "inventory": 127
+                },
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU003",
+                  "inventory": 50
+                }
+              ],
+              "average_daily_units": 77.06666666666666,
+              "estimated_stock_days": 0.6487889273356402,
+              "coverage": {
+                "expected_days": 30,
+                "observed_days": 30,
+                "complete": true,
+                "missing_dates": []
+              },
+              "source": "inventory.csv",
+              "sales_coverage": {
+                "expected_days": 30,
+                "observed_days": 30,
+                "complete": true,
+                "missing_dates": []
+              },
+              "estimate_unavailable_reason": null,
+              "limitations": [
+                "trend只描述区间首尾库存净变化，不表示每天都同向变化。",
+                "可售天数假定未来销量与所选区间日均销量相同，未考虑在途补货或需求变化。"
+              ]
+            },
+            "error": null
+          }
+        }
+      ],
+      "checks": [
+        "loop完成",
+        "模型调用预期工具",
+        "关键数据/日期检查通过"
+      ]
+    },
+    {
+      "case": "sales",
+      "question": "查询SKU001最近30天的销量、销售额和转化率。",
+      "status": "completed",
+      "answer": "以下是 **SKU001** 最近30天（2026-08-24 至 2026-09-22）的销售数据：\n\n| 指标 | 数值 |\n|------|------|\n| 销量（件数） | 1,205 |\n| 销售额 | 48,079.50 |\n| 转化率 | 5.99% |\n\n- **数据来源**：`get_sales_data`\n- **数据覆盖**：30天完整，无缺失日期。",
+      "model_calls": 2,
+      "tool_calls": [
+        {
+          "id": "call_26e46b1effd246d9b2420609",
+          "name": "get_sales_data",
+          "arguments": {
+            "sku": "SKU001",
+            "start_date": "2026-08-24",
+            "end_date": "2026-09-22"
+          },
+          "execution_status": "success",
+          "result": {
+            "schema_version": "1.0",
+            "tool": "get_sales_data",
+            "status": "ok",
+            "data": {
+              "status": "ok",
+              "sku": "SKU001",
+              "message": "",
+              "start_date": "2026-08-24",
+              "end_date": "2026-09-22",
+              "metrics": {
+                "orders": 1092,
+                "units": 1205,
+                "revenue": 48079.5,
+                "sessions": 18226,
+                "conversion_rate": 0.05991440798858773
+              },
+              "coverage": {
+                "expected_days": 30,
+                "observed_days": 30,
+                "complete": true,
+                "missing_dates": []
+              },
+              "source": "sales.csv"
+            },
+            "error": null
+          }
+        }
+      ],
+      "checks": [
+        "loop完成",
+        "模型调用预期工具",
+        "关键数据/日期检查通过"
+      ]
+    },
+    {
+      "case": "comparison",
+      "question": "比较SKU002最近30天和之前30天的销售表现。",
+      "status": "completed",
+      "answer": "以下是SKU002最近30天与之前30天的销售表现比较：\n\n**比较周期**\n*   **本期（最近30天）**：2026-08-24 至 2026-09-22\n*   **前期（之前30天）**：2026-07-25 至 2026-08-23\n\n**核心指标对比**\n\n| 指标 | 最近30天 | 之前30天 | 绝对变化 | 相对变化 |\n| :--- | :--- | :--- | :--- | :--- |\n| **订单数 (Orders)** | 1,134 | 1,888 | -754 | -39.94% |\n| **销量 (Units)** | 1,245 | 2,081 | -836 | -40.17% |\n| **销售额 (Revenue)** | 87,025.50 | 145,461.90 | -58,436.40 | -40.17% |\n| **访问量 (Sessions)** | 29,018 | 29,038 | -20 | -0.07% |\n| **转化率** | 3.91% | 6.50% | -2.59个百分点 | -39.90% |\n\n**数据说明**\n*   **数据完整性**：两个周期均包含完整的30个数据日，数据完整（coverage: complete）。\n*   **所用工具**：`compare_sales_periods`",
+      "model_calls": 2,
+      "tool_calls": [
+        {
+          "id": "call_637c469da3024d408a2e7e6c",
+          "name": "compare_sales_periods",
+          "arguments": {
+            "sku": "SKU002",
+            "current_start": "2026-08-24",
+            "current_end": "2026-09-22",
+            "previous_start": "2026-07-25",
+            "previous_end": "2026-08-23"
+          },
+          "execution_status": "success",
+          "result": {
+            "schema_version": "1.0",
+            "tool": "compare_sales_periods",
+            "status": "ok",
+            "data": {
+              "sku": "SKU002",
+              "current": {
+                "status": "ok",
+                "sku": "SKU002",
+                "message": "",
+                "start_date": "2026-08-24",
+                "end_date": "2026-09-22",
+                "metrics": {
+                  "orders": 1134,
+                  "units": 1245,
+                  "revenue": 87025.5,
+                  "sessions": 29018,
+                  "conversion_rate": 0.039079192225515196
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 37.8,
+                  "units": 41.5,
+                  "revenue": 2900.85,
+                  "sessions": 967.2666666666667
+                }
+              },
+              "previous": {
+                "status": "ok",
+                "sku": "SKU002",
+                "message": "",
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "orders": 1888,
+                  "units": 2081,
+                  "revenue": 145461.9,
+                  "sessions": 29038,
+                  "conversion_rate": 0.06501825194572629
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 62.93333333333333,
+                  "units": 69.36666666666666,
+                  "revenue": 4848.73,
+                  "sessions": 967.9333333333333
+                }
+              },
+              "changes": {
+                "orders": {
+                  "absolute_change": -754,
+                  "relative_change": -0.399364406779661,
+                  "relative_change_reason": null
+                },
+                "units": {
+                  "absolute_change": -836,
+                  "relative_change": -0.40172993753003367,
+                  "relative_change_reason": null
+                },
+                "revenue": {
+                  "absolute_change": -58436.399999999994,
+                  "relative_change": -0.4017299375300336,
+                  "relative_change_reason": null
+                },
+                "sessions": {
+                  "absolute_change": -20,
+                  "relative_change": -0.0006887526689165921,
+                  "relative_change_reason": null
+                },
+                "conversion_rate": {
+                  "absolute_change": -0.025939059720211093,
+                  "relative_change": -0.39895043228574667,
+                  "relative_change_reason": null
+                }
+              },
+              "warnings": [],
+              "status": "ok",
+              "conversion_rate_percentage_point_change": -2.5939059720211093
+            },
+            "error": null
+          }
+        }
+      ],
+      "checks": [
+        "loop完成",
+        "模型调用预期工具",
+        "关键数据/日期检查通过"
+      ]
+    },
+    {
+      "case": "missing_product",
+      "question": "查询SKU999的商品基本信息。",
+      "status": "completed",
+      "answer": "**查询结果：SKU999 商品不存在**\n\n| 项目 | 内容 |\n|------|------|\n| SKU | SKU999 |\n| 状态 | 未找到 |\n| 说明 | 当前数据源中没有找到该商品 |\n\n**所用工具**：get_product_info\n\n如果您确认SKU编号有误，请核实后重新提供；或提供其他SKU编号进行查询。",
+      "model_calls": 2,
+      "tool_calls": [
+        {
+          "id": "call_68aa4e435de44ed09e5c6a7e",
+          "name": "get_product_info",
+          "arguments": {
+            "sku": "SKU999"
+          },
+          "execution_status": "success",
+          "result": {
+            "schema_version": "1.0",
+            "tool": "get_product_info",
+            "status": "not_found",
+            "data": {
+              "status": "not_found",
+              "sku": "SKU999",
+              "message": "当前数据源中没有找到该商品。",
+              "product": null
+            },
+            "error": null
+          }
+        }
+      ],
+      "checks": [
+        "loop完成",
+        "模型调用预期工具",
+        "关键数据/日期检查通过"
+      ]
+    }
+  ],
+  "limitations": "固定模拟数据的集成验收，不是完整的自然语言事实核验。",
+  "status": "passed"
+}
