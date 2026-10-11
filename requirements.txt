@@ -3,3 +3,6 @@ langchain-core==1.6.4
 pydantic==2.13.5
 langchain-openai==1.6.5
 python-dotenv==1.2.3
+langchain-chroma==1.1.0
+chromadb==1.5.9
+langchain-text-splitters==1.1.2

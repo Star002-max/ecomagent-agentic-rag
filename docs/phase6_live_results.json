@@ -1,0 +1,256 @@
+{
+  "tested_at_utc": "2026-09-24T14:10:25.735109+00:00",
+  "model": "qwen3.7-plus",
+  "data_as_of": "2026-09-22",
+  "mode": "real_api",
+  "question": "分析 SKU003 当前库存风险，并根据我们的库存管理规则给出建议。",
+  "status": "passed",
+  "answer": "## SKU003 库存风险分析\n\n### 已确认事实\n\n| 指标 | 数值 |\n|------|------|\n| 商品编号 | SKU003 |\n| 数据区间 | 2026-08-24 至 2026-09-22（30天，完整） |\n| 当前库存（2026-09-22） | **50 件** |\n| 区间库存变化 | **-2,237 件** |\n| 趋势 | 持续下降 |\n| 区间日均销量 | **77.07 件/天** |\n| 估算可售天数 | **≈ 0.65 天** |\n\n> 数据来源：`get_inventory_data`\n\n### 风险判断\n\n根据运营知识库规则（source: `inventory_management.md`）：\n\n- 可售天数 < 7 天 → **高风险**\n- 可售天数 7–14 天 → 中风险\n- 可售天数 > 14 天 → 低风险\n\nSKU003 估算可售天数仅 **0.65 天**，远低于 7 天阈值，属于 **高风险（即将断货）**。按当前日均销量约 77 件/天计算，现有 50 件库存不足一天即可售罄。\n\n### 行动建议\n\n根据运营知识库规则（source: `inventory_management.md`）：\n\n1. **立即核对在途补货**：确认是否已有补货订单在途，以及预计到货时间。\n2. **紧急安排补货**：结合近期日均约 77 件的销量水平，尽快安排补货，避免断货。\n3. **复核补货周期与安全库存**：当前库存从 2,287 件在 30 天内降至 50 件，消耗速度极快，需重新评估安全库存水位和补货频率。\n\n### 证据限制\n\n- 可售天数估算基于过去 30 天日均销量，**未考虑在途补货或未来需求变化**。\n- 当前缺少补货计划、在途订单、供应商交期等数据，无法判断实际断货时间。\n- 库存趋势仅描述区间首尾净变化，不表示每天都同向变化。\n- 如需更精确判断，建议补充在途补货信息和未来销量预测数据。",
+  "model_calls": 2,
+  "tool_calls": [
+    {
+      "id": "call_a19f28cd5ff84ffbb90a7790",
+      "name": "get_inventory_data",
+      "arguments": {
+        "sku": "SKU003"
+      },
+      "execution_status": "success",
+      "result": {
+        "schema_version": "1.0",
+        "tool": "get_inventory_data",
+        "status": "ok",
+        "data": {
+          "status": "ok",
+          "sku": "SKU003",
+          "message": "",
+          "start_date": "2026-08-24",
+          "end_date": "2026-09-22",
+          "current_inventory": 50,
+          "current_inventory_date": "2026-09-22",
+          "inventory_change": -2237,
+          "trend": "down",
+          "history": [
+            {
+              "date": "2026-08-24",
+              "sku": "SKU003",
+              "inventory": 2287
+            },
+            {
+              "date": "2026-08-25",
+              "sku": "SKU003",
+              "inventory": 2211
+            },
+            {
+              "date": "2026-08-26",
+              "sku": "SKU003",
+              "inventory": 2139
+            },
+            {
+              "date": "2026-08-27",
+              "sku": "SKU003",
+              "inventory": 2066
+            },
+            {
+              "date": "2026-08-28",
+              "sku": "SKU003",
+              "inventory": 1995
+            },
+            {
+              "date": "2026-08-29",
+              "sku": "SKU003",
+              "inventory": 1923
+            },
+            {
+              "date": "2026-08-30",
+              "sku": "SKU003",
+              "inventory": 1848
+            },
+            {
+              "date": "2026-08-31",
+              "sku": "SKU003",
+              "inventory": 1772
+            },
+            {
+              "date": "2026-09-01",
+              "sku": "SKU003",
+              "inventory": 1697
+            },
+            {
+              "date": "2026-09-02",
+              "sku": "SKU003",
+              "inventory": 1621
+            },
+            {
+              "date": "2026-09-03",
+              "sku": "SKU003",
+              "inventory": 1544
+            },
+            {
+              "date": "2026-09-04",
+              "sku": "SKU003",
+              "inventory": 1466
+            },
+            {
+              "date": "2026-09-05",
+              "sku": "SKU003",
+              "inventory": 1387
+            },
+            {
+              "date": "2026-09-06",
+              "sku": "SKU003",
+              "inventory": 1310
+            },
+            {
+              "date": "2026-09-07",
+              "sku": "SKU003",
+              "inventory": 1233
+            },
+            {
+              "date": "2026-09-08",
+              "sku": "SKU003",
+              "inventory": 1158
+            },
+            {
+              "date": "2026-09-09",
+              "sku": "SKU003",
+              "inventory": 1077
+            },
+            {
+              "date": "2026-09-10",
+              "sku": "SKU003",
+              "inventory": 1000
+            },
+            {
+              "date": "2026-09-11",
+              "sku": "SKU003",
+              "inventory": 921
+            },
+            {
+              "date": "2026-09-12",
+              "sku": "SKU003",
+              "inventory": 841
+            },
+            {
+              "date": "2026-09-13",
+              "sku": "SKU003",
+              "inventory": 765
+            },
+            {
+              "date": "2026-09-14",
+              "sku": "SKU003",
+              "inventory": 688
+            },
+            {
+              "date": "2026-09-15",
+              "sku": "SKU003",
+              "inventory": 611
+            },
+            {
+              "date": "2026-09-16",
+              "sku": "SKU003",
+              "inventory": 530
+            },
+            {
+              "date": "2026-09-17",
+              "sku": "SKU003",
+              "inventory": 447
+            },
+            {
+              "date": "2026-09-18",
+              "sku": "SKU003",
+              "inventory": 369
+            },
+            {
+              "date": "2026-09-19",
+              "sku": "SKU003",
+              "inventory": 291
+            },
+            {
+              "date": "2026-09-20",
+              "sku": "SKU003",
+              "inventory": 210
+            },
+            {
+              "date": "2026-09-21",
+              "sku": "SKU003",
+              "inventory": 127
+            },
+            {
+              "date": "2026-09-22",
+              "sku": "SKU003",
+              "inventory": 50
+            }
+          ],
+          "average_daily_units": 77.06666666666666,
+          "estimated_stock_days": 0.6487889273356402,
+          "coverage": {
+            "expected_days": 30,
+            "observed_days": 30,
+            "complete": true,
+            "missing_dates": []
+          },
+          "source": "inventory.csv",
+          "sales_coverage": {
+            "expected_days": 30,
+            "observed_days": 30,
+            "complete": true,
+            "missing_dates": []
+          },
+          "estimate_unavailable_reason": null,
+          "limitations": [
+            "trend只描述区间首尾库存净变化，不表示每天都同向变化。",
+            "可售天数假定未来销量与所选区间日均销量相同，未考虑在途补货或需求变化。"
+          ]
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "call_2f1e8157f9314446b5a7600e",
+      "name": "search_operation_knowledge",
+      "arguments": {
+        "query": "库存风险分级和补货建议",
+        "k": 3
+      },
+      "execution_status": "success",
+      "result": {
+        "schema_version": "1.0",
+        "tool": "search_operation_knowledge",
+        "status": "ok",
+        "data": {
+          "query": "库存风险分级和补货建议",
+          "matches": [
+            {
+              "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "风险分级",
+              "chunk_id": 0
+            },
+            {
+              "content": "## 处理建议  \n高风险时应立即核对在途补货和预计到货时间，并结合近期销量安排补货。中风险时应进入重点监控，复核补货周期和安全库存。低风险时按常规频率监控。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "处理建议",
+              "chunk_id": 1
+            },
+            {
+              "content": "## 输出要求  \n结论应分成已确认事实、风险判断、行动建议和证据限制。缺少价格变动、流量来源、补货计划或商品批次等信息时，应明确说明还需要补充数据。",
+              "source": "product_analysis_sop.md",
+              "title": "综合商品分析 SOP",
+              "section": "输出要求",
+              "chunk_id": 5
+            }
+          ]
+        },
+        "error": null
+      }
+    }
+  ],
+  "structured_output": null,
+  "checks": [
+    "库存业务数据Tool成功",
+    "库存知识检索Tool成功",
+    "Qwen综合回答并引用source"
+  ]
+}

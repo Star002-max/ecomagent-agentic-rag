@@ -6,6 +6,7 @@ import json
 from src.agent.model import ModelRequestError, create_model, redact
 from src.agent.runner import AgentExecutionError, ProductAgent
 from src.config import load_settings
+from src.rag import build_knowledge_base
 from src.services import CsvDataStore
 from src.tools import build_tools
 
@@ -19,7 +20,8 @@ def main() -> None:
     try:
         settings = load_settings()
         store = CsvDataStore()
-        agent = ProductAgent(create_model(settings), build_tools(store), store.as_of_date,
+        agent = ProductAgent(create_model(settings),
+                             build_tools(store, build_knowledge_base()), store.as_of_date,
                              api_key=settings.api_key)
         result = agent.run_analysis(args.question)
     except (ValueError, ModelRequestError, AgentExecutionError) as exc:

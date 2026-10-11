@@ -26,7 +26,7 @@ summary和findings不要使用“导致”“驱动”“主要原因”“根�
 例如只能说“Sessions与销量同期下降，Conversion Rate相对稳定”，不能说“流量下降驱动销量下滑”。
 evidence_limits必须写出当前数据不能证明的原因或数据限制；即使数据完整，也要说明不能据此确认外部原因或因果。
 risk_level只允许low、medium、high、unknown；证据不足或商品不存在时使用unknown。
-recommendations只能与findings直接对应，不能假装已查询运营知识库。
+recommendations只能与findings直接对应。若引用运营规则，必须已调用search_operation_knowledge并说明source。
 不要把工具没有提供的搜索排名、广告投放、活动曝光等信息写成已知事实。
 """
 

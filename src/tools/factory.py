@@ -1,15 +1,20 @@
 """Build five real LangChain tools with an application-owned data snapshot."""
 
-from typing import Callable
+from typing import Callable, Protocol
 
-from langchain_core.tools import StructuredTool
+from langchain_core.tools import StructuredTool, ToolException
 from pydantic import BaseModel, ValidationError
 
 from src import services
 from src.services import CsvDataStore
 
-from .results import call_service, validation_error_json
-from .schemas import ComparisonInput, InventoryInput, ProductInput, ReviewInput, SalesInput
+from .results import call_service, result_json, validation_error_json
+from .schemas import (ComparisonInput, InventoryInput, KnowledgeSearchInput, ProductInput,
+                      ReviewInput, SalesInput)
+
+
+class KnowledgeSearcher(Protocol):
+    def search(self, query: str, *, k: int = 3) -> dict: ...
 
 
 def _make_tool(name: str, description: str, schema: type[BaseModel],
@@ -29,7 +34,42 @@ def _make_tool(name: str, description: str, schema: type[BaseModel],
     )
 
 
-def build_tools(store: CsvDataStore) -> list[StructuredTool]:
+def _make_knowledge_tool(searcher: KnowledgeSearcher) -> StructuredTool:
+    name = "search_operation_knowledge"
+
+    def run(query: str, k: int = 3) -> str:
+        try:
+            data = searcher.search(query, k=k)
+        except ValueError as exc:
+            raise ToolException(result_json(name, "error", error={
+                "code": "invalid_arguments", "message": str(exc), "details": [],
+            })) from None
+        except Exception:
+            raise ToolException(result_json(name, "error", error={
+                "code": "retrieval_error",
+                "message": "运营知识检索暂时不可用，请基于已有证据回答并说明限制。",
+                "details": [],
+            })) from None
+        status = "ok" if data["matches"] else "no_data"
+        return result_json(name, status, data=data)
+
+    return StructuredTool.from_function(
+        func=run,
+        name=name,
+        description=(
+            "检索本地运营知识库中的销售分析规则、库存风险分级、评论管理规则和商品分析SOP。"
+            "适合回答‘按照我们的规则如何判断或处理’；只返回知识片段及source元数据，不查询CSV、"
+            "不计算SKU指标，也不代替最终分析。需要结合商品真实数据时还应调用相应业务工具。"
+        ),
+        args_schema=KnowledgeSearchInput,
+        infer_schema=False,
+        handle_validation_error=lambda error: validation_error_json(name, error),
+        handle_tool_error=lambda error: str(error),
+    )
+
+
+def build_tools(store: CsvDataStore,
+                knowledge_searcher: KnowledgeSearcher | None = None) -> list[StructuredTool]:
     """Register tool capabilities, without selecting tools or creating an Agent.
 
     A closure holds the store: the model never supplies paths, Python code or
@@ -40,7 +80,7 @@ def build_tools(store: CsvDataStore) -> list[StructuredTool]:
         "返回JSON：status区分ok、not_found、no_data、partial、insufficient_data、error；"
         "data保留原始服务结果，error记录调用错误。null不代表0。"
     )
-    return [
+    tools = [
         _make_tool(
             "get_product_info",
             "查询单个商品的名称、类目、固定价格、当前评分及评价数。"
@@ -78,6 +118,9 @@ def build_tools(store: CsvDataStore) -> list[StructuredTool]:
             + context, ReviewInput, services.get_review_data, store,
         ),
     ]
+    if knowledge_searcher is not None:
+        tools.append(_make_knowledge_tool(knowledge_searcher))
+    return tools
 
 
 def describe_tools(tools: list[StructuredTool]) -> list[dict]:

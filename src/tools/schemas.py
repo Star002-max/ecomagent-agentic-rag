@@ -49,3 +49,14 @@ class ReviewInput(InventoryInput):
         default=5, ge=1, le=100,
         description="最多返回多少条最近低分评价（评分<=2），1至100的整数，默认5。",
     )
+
+
+class KnowledgeSearchInput(BaseModel):
+    """A natural-language retrieval query, independent of any SKU schema."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+    query: str = Field(
+        min_length=2, max_length=300,
+        description="要检索的运营规则、分析方法或处理建议，例如‘库存风险分级和补货建议’。",
+    )
+    k: int = Field(default=3, ge=1, le=5, description="返回知识片段数量，1至5，默认3。")
