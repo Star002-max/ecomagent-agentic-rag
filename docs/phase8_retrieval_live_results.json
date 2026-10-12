@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "evaluated_at_utc": "2026-10-12T09:05:35.617205+00:00",
+  "evaluated_at_utc": "2026-10-12T14:00:47.642606+00:00",
   "dataset": "evals/phase7_cases.json",
   "case_ids": [
     "C07",
@@ -149,18 +149,142 @@
       "model": "text-embedding-v4",
       "dimensions": 1024,
       "case_count": 3,
-      "completed_case_count": 0,
-      "stopped_on_error": true,
-      "status": "error",
-      "error_type": "RuntimeError",
-      "error": "Embedding请求失败（APIConnectionError）：Connection error.",
-      "cases": []
+      "completed_case_count": 3,
+      "stopped_on_error": false,
+      "mean_recall_at_3": 1.0,
+      "mean_mrr": 1.0,
+      "cases": [
+        {
+          "case_id": "C07",
+          "query": "可售天数库存风险分级",
+          "top_k": 3,
+          "expected_sources": [
+            "inventory_management.md"
+          ],
+          "results": [
+            {
+              "rank": 1,
+              "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "风险分级",
+              "chunk_id": 0,
+              "is_expected_source": true
+            },
+            {
+              "rank": 2,
+              "content": "## 使用限制  \n可售天数是基于历史日均销量的静态估算，不包含未来促销、需求预测、供应商交期或已经下单但尚未入库的数量。数据不完整或无法计算日均销量时，不应强行给出风险等级。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "使用限制",
+              "chunk_id": 2,
+              "is_expected_source": true
+            },
+            {
+              "rank": 3,
+              "content": "## 综合判断  \n先描述销量、订单、访问量和转化率的变化，再检查库存可售天数与评价变化。不同指标同期变化只能视为相关线索，不能直接认定因果关系。",
+              "source": "product_analysis_sop.md",
+              "title": "综合商品分析 SOP",
+              "section": "综合判断",
+              "chunk_id": 4,
+              "is_expected_source": false
+            }
+          ],
+          "recall_at_3": 1.0,
+          "mrr": 1.0,
+          "status": "completed"
+        },
+        {
+          "case_id": "C08",
+          "query": "余量按最近销售速度只能卖几天应该优先处理什么",
+          "top_k": 3,
+          "expected_sources": [
+            "inventory_management.md"
+          ],
+          "results": [
+            {
+              "rank": 1,
+              "content": "## 使用限制  \n可售天数是基于历史日均销量的静态估算，不包含未来促销、需求预测、供应商交期或已经下单但尚未入库的数量。数据不完整或无法计算日均销量时，不应强行给出风险等级。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "使用限制",
+              "chunk_id": 2,
+              "is_expected_source": true
+            },
+            {
+              "rank": 2,
+              "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "风险分级",
+              "chunk_id": 0,
+              "is_expected_source": true
+            },
+            {
+              "rank": 3,
+              "content": "## 综合判断  \n先描述销量、订单、访问量和转化率的变化，再检查库存可售天数与评价变化。不同指标同期变化只能视为相关线索，不能直接认定因果关系。",
+              "source": "product_analysis_sop.md",
+              "title": "综合商品分析 SOP",
+              "section": "综合判断",
+              "chunk_id": 4,
+              "is_expected_source": false
+            }
+          ],
+          "recall_at_3": 1.0,
+          "mrr": 1.0,
+          "status": "completed",
+          "evidence_sufficiency": {
+            "status": "pending_manual_review",
+            "check": "命中库存管理来源不等于证据充分；检查返回片段是否明确支持针对‘只能卖几天’的具体优先处理措施。"
+          }
+        },
+        {
+          "case_id": "C09",
+          "query": "库存风险分级和补货建议",
+          "top_k": 3,
+          "expected_sources": [
+            "inventory_management.md"
+          ],
+          "results": [
+            {
+              "rank": 1,
+              "content": "## 处理建议  \n高风险时应立即核对在途补货和预计到货时间，并结合近期销量安排补货。中风险时应进入重点监控，复核补货周期和安全库存。低风险时按常规频率监控。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "处理建议",
+              "chunk_id": 1,
+              "is_expected_source": true
+            },
+            {
+              "rank": 2,
+              "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+              "source": "inventory_management.md",
+              "title": "库存管理规则",
+              "section": "风险分级",
+              "chunk_id": 0,
+              "is_expected_source": true
+            },
+            {
+              "rank": 3,
+              "content": "## 输出要求  \n结论应分成已确认事实、风险判断、行动建议和证据限制。缺少价格变动、流量来源、补货计划或商品批次等信息时，应明确说明还需要补充数据。",
+              "source": "product_analysis_sop.md",
+              "title": "综合商品分析 SOP",
+              "section": "输出要求",
+              "chunk_id": 5,
+              "is_expected_source": false
+            }
+          ],
+          "recall_at_3": 1.0,
+          "mrr": 1.0,
+          "status": "completed"
+        }
+      ]
     }
   ],
-  "stopped_on_error": true,
+  "stopped_on_error": false,
   "interpretation_limit": "固定3个query仅用于本项目回归对照；来源命中不代表回答正确。C08证据充分性须单独人工复核。",
   "metric_deltas_aliyun_minus_local_hash": {
-    "mean_recall_at_3": null,
-    "mean_mrr": null
+    "mean_recall_at_3": 0.0,
+    "mean_mrr": 0.2222222222222222
   }
 }

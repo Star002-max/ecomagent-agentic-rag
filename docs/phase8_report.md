@@ -2,7 +2,7 @@
 
 ## 目标与完成范围
 
-Phase 8 完成 Embedding provider 配置、LocalHash 与百炼 `text-embedding-v4` 的适配边界、固定检索评估，以及最多保留4轮的会话内 Memory。Step 1–6 的离线代码、测试和报告已完成。本报告记录 tokenizer 修复前的一次本地失败（0次 HTTP）、修复后的一次真实请求连接失败（客户端尝试1次，服务端是否收到未知），以及最后一次因沙箱网络/TLS 条件不满足而跳过的验收。没有调用 Qwen Chat API，没有安装依赖、没有提交，也没有开始 Phase 9。
+Phase 8 完成 Embedding provider 配置、LocalHash 与百炼 `text-embedding-v4` 的适配边界、固定检索评估，以及最多保留4轮的会话内 Memory。Step 1–6 的离线代码与验收已经完成。此前 Codex 运行环境中出现过 tokenizer 导入问题和一次 API 连接失败；之后用户在 Mac Terminal 使用项目虚拟环境和 `.env` 成功运行了完整 C07–C09 对照，本报告根据提交到项目中的真实结果文件更新最终云端验收结论。没有在本次文档更新中再次调用 API，也没有调用 Qwen Chat API。
 
 ## 重要文件与执行流程
 
@@ -24,13 +24,17 @@ Phase 8 完成 Embedding provider 配置、LocalHash 与百炼 `text-embedding-v
 - 本次 tokenizer 修复针对性测试：`.venv/bin/python -m unittest tests.test_rag`，**18项通过**；Fake OpenAI client 验证建索引和查询路径都发送原始字符串，未导入 `transformers`。
 - 全量离线回归：`.venv/bin/python -m unittest discover -s tests`，**145项通过**。相关用例显式走 LocalHash 或 Fake/Mock，没有真实 API 请求。
 - 默认本地检索评估实际执行成功：C07–C09 的平均 Recall@3 为 **1.0**，平均 MRR 为 **0.7778**。C08 的预期 source 排名第3，Recall@3 为1.0、MRR为0.3333；其证据充分性仍是待人工复核，source 命中不视为已能支持具体行动建议。
+- 用户在 Mac Terminal 使用项目入口完成一次真实云端对照，结果记录在 `docs/phase8_retrieval_live_results.json`：LocalHash 384维与百炼 `text-embedding-v4` 1024维均完成 C07–C09（3/3），`stopped_on_error=false`。LocalHash Mean Recall@3 **1.0**、Mean MRR **0.7778**；百炼 Mean Recall@3 **1.0**、Mean MRR **1.0**。因此固定样例上的 Recall@3 差值为 **0**，MRR 差值为 **+0.2222**。
+- 正确来源最佳排名：LocalHash 的 C07/C08/C09 为 **1/3/1**；百炼为 **1/1/1**。特别是 C08 从第3位升至第1位。三条固定查询只反映这组评估案例，不应外推为普遍质量保证。
+- C08 证据充分性：云端 Top-3 命中正确的 `inventory_management.md` 来源，但返回片段包含使用限制与风险分级，仍未明确给出“优先处理什么”的具体行动依据。**来源命中已验证，支持具体处理建议的证据仍不足**；应在回答中保留这一限制。
+- 本次云端运行由用户在 Mac Terminal 执行；本次 Codex 文档收尾没有重复调用云端 API。实际响应成功并完成三条检索案例，结果文件的 `stopped_on_error` 为 `false`。
 - 本次真实验收配置校验通过：Provider=`aliyun`、模型=`text-embedding-v4`、维度=1024，北京兼容地址符合配置校验。固定数据共12个 chunk；按每批10条及3次查询估算上限为5次 Embedding HTTP 请求。云端评估器在首次本地 Embedding 准备阶段报错：`Embedding请求失败（ValueError）：Could not import transformers python package...`。实际发送 **0 次 HTTP 请求**，没有重试，也未执行云端 C07–C09 检索。脱敏后的结果保存在 `docs/phase8_retrieval_live_results.json`。
 - 修复 tokenizer 后再次执行获授权的唯一一轮真实对照：配置校验通过，12个索引 chunk 预计最多2批，外加3次查询，上限5次。LocalHash C07–C09 全部完成；云端在索引阶段的首个 Embedding 客户端请求遇到脱敏错误 `Embedding请求失败（APIConnectionError）：Connection error.`。**客户端尝试1次请求；是否到达百炼服务端无法确认**，无自动重试，也未发送第二个索引批次或任何云端查询。结果记录在 `docs/phase8_retrieval_live_results.json`。
 - 最后一次验收门槛检查：未发出 API 请求。Codex 沙箱内 Python 对同一 Host 的 DNS 解析失败，直连提供的 IP 到 TCP 443 返回 `Operation not permitted`；经批准的沙箱外诊断中 DNS 解析和 TCP 443 成功，但 TLS 证书验证报 `unable to get local issuer certificate`。当前无代理环境变量；OpenAI/HTTPX 默认信任环境变量并要求证书校验。由于沙箱网络和 TLS 条件仍不满足，按要求跳过最后一次云端评估。
 - 本次 LocalHash Top-3 基线：C07/C08/C09 的预期来源名次为 **1/3/1**；Recall@3 均为 **1.0**，MRR 分别为 **1.0/0.3333/1.0**；宏平均 Recall@3 为 **1.0**，宏平均 MRR 为 **0.7778**。云端没有成功返回向量或 Top-3，无法计算云端指标和差值。
 - C08 证据判断：LocalHash 命中预期库存来源（第3名），因此来源级 Recall@3 为1.0；但该片段只给出可售天数风险分级，没有说明应优先核对在途补货、到货时间或安排补货。**本次 LocalHash Top-3 证据不足以支持具体处理建议**。云端未得到结果，不能判断云端证据是否充分。
 - `scripts.check_secrets`：通过；检查器已覆盖 Chat 与 Embedding 两类 Key，报告 `.env` 被忽略且未跟踪、82个可提交文件、Diff 和 index 未发现密钥。`git diff --check`：通过。工作区仍有 Phase 8 未提交改动。
-- 真实百炼 Embedding：本次客户端请求尝试 **1次**，连接错误且服务端是否收到请求未知；无成功响应。真实 Qwen Chat API：**未执行**。云端原始字符串请求、向量返回、云端检索排名和模型多轮回答效果仍未验收。
+- 真实百炼 Embedding：用户的 Mac Terminal 运行已成功返回1024维 Embedding，并完成项目内 Chroma → Retriever 的 C07–C09 检索对照。真实 Qwen Chat API：**未执行**。完整 LLM Agent → Tool Calling → Qwen Chat 的云端问答链路不属于本次验收范围，仍未验证。
 
 ## 技术选择、问题记录与限制
 
@@ -70,8 +74,8 @@ Phase 8 完成 Embedding provider 配置、LocalHash 与百炼 `text-embedding-v
 
 ## Git 变化摘要
 
-Phase 8 修改仍未提交；当前工作区包含 Phase 8 Step 1–6 的修改与新增文件。未触碰业务 CSV、Service 或 Tool 业务逻辑。建议 Commit Message：`feat: add semantic retrieval evaluation and session memory`。本次不提交。
+Phase 8 功能实现已由既有提交 `c26e800d0f4f60a55f411805be6352350ef64b82` 保存。本次补充提交只包含用户运行产生的真实检索结果 JSON 以及 README/本报告对最终结果的准确记录，不修改或回退既有 Phase 8 功能提交。建议补充提交信息：`docs: record live embedding retrieval validation`。
 
 ## 下一阶段边界
 
-Phase 8 的离线与 Mock 验收完成；真实百炼检索验收未通过且最终授权尝试因环境门槛未执行。云端真实排名与服务兼容性明确标记为未验证。Phase 8 收尾后可进入 Phase 9 规划；Phase 9 开发不在本阶段范围内。
+Embedding Provider → Chroma → Retriever 的离线/Mock 验收及一次真实百炼检索对照均已完成。真实云端检索在 C07–C09 上的排名和指标已记录；C08 的具体行动证据仍不足。完整 Qwen Chat/LLM Agent 云端问答链路未验证。Phase 8 范围到此结束。

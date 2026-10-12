@@ -1,6 +1,6 @@
 # EcomAgent
 
-基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。Phase 1–7 已完成；Phase 8 已实现云端 Embedding 配置能力、固定检索评估和会话内 Memory。真实阿里云 Embedding 验收因连接与当前运行环境限制未完成；Qwen API 未在 Phase 8 验收。项目用于学习和面试展示，所有业务数据均为模拟数据，不代表真实商家经营情况。
+基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。Phase 1–8 已完成；Phase 8 的百炼 `text-embedding-v4` 云端 Embedding → Chroma → Retriever 检索链路已由固定 C07–C09 对照验收。该验收不包含完整 LLM Agent 问答链路，Qwen Chat API 未在本次云端检索测试中调用。项目用于学习和面试展示，所有业务数据均为模拟数据，不代表真实商家经营情况。
 
 V1业务范围只有商品、销售、库存、评价。模型可从5个业务数据Tool和1个运营知识检索Tool中自主选择；CSV Service负责确定性数据，RAG负责非结构化规则。综合分析使用Pydantic校验最终JSON；交互模式使用最多4轮的进程内Memory，不持久化；没有使用LangGraph。
 
@@ -24,7 +24,8 @@ V1业务范围只有商品、销售、库存、评价。模型可从5个业务�
 - [Phase 7评估案例](evals/phase7_cases.json)：固定问题、必需/允许工具、数据证据及人工复核项。
 - [Phase 7 Offline结果](docs/phase7_offline_results.json)：Fake Model执行、真实本地Tools/RAG证据和Top-3检索记录。
 - [Phase 7 Live结果](docs/phase7_live_results.json)：限定的Qwen验收记录；连接失败后按规则停止，没有重试。
-- [Phase 8阶段报告](docs/phase8_report.md)：Embedding配置与检索对照、4轮会话Memory、离线验收及真实 API 验收限制。
+- [Phase 8阶段报告](docs/phase8_report.md)：Embedding配置与检索对照、4轮会话Memory、离线与真实云端验收边界。
+- [Phase 8真实检索结果](docs/phase8_retrieval_live_results.json)：Mac Terminal 执行的 C07–C09 LocalHash/百炼对照；云端 1024 维结果成功，C08 证据充分性仍有限。
 - [Phase 8检索评估脚本](scripts/evaluate_retrieval.py)：复用C07–C09，记录Top-3、Recall@3、MRR；C08证据充分性单独人工复核。
 - [工具定义快照](docs/tool_catalog.json)：可查看后续模型将接收的工具名称、用途和JSON参数schema，不含数据对象或文件路径。
 
@@ -90,7 +91,7 @@ python -m scripts.validate_mock_data --data-dir work/sample
 
 ## 预期结果
 
-Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent和run_analysis实际调用模型，show-tools打印模型选中的工具及状态。Phase 8最终离线回归共 `Ran 145 tests`、`OK`。Fake/Mock 验收验证 Agent 协议、Memory 状态与本地评估器，不代表真实 Qwen 或百炼 Embedding 的质量。C08 的来源命中和证据充分性分开记录。
+Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent和run_analysis实际调用模型，show-tools打印模型选中的工具及状态。Phase 8最终离线回归共 `Ran 145 tests`、`OK`。另由用户在 Mac Terminal 完成一次真实百炼检索对照：C07–C09 均完成，云端 Mean Recall@3 为1.0、Mean MRR为1.0；这验证了 Embedding/RAG 检索链路，不代表完整 LLM Agent 云端问答或 Qwen Chat 已验证。C08 虽然正确来源排名从 LocalHash第3位升至云端第1位，Top-3片段仍不足以明确支持具体优先处理措施。
 
 比较基准来自数据截止日而不是电脑当天日期。默认最近30天是2026-08-24至2026-09-22；之前30天是2026-07-25至2026-08-23，两个窗口均包含首尾日期，互不重叠。
 
