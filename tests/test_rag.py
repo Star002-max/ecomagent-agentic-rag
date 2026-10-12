@@ -1,15 +1,20 @@
 """Phase 6 offline tests for loading, Chroma retrieval, Tool, and Agent integration."""
 
 import json
+import builtins
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.embeddings import Embeddings
 
 from src.agent.runner import ProductAgent
+from src.config import EmbeddingSettings, load_embedding_settings
 from src.rag.knowledge_base import (LocalHashEmbeddings, build_knowledge_base,
-                                    load_markdown_documents, split_markdown_documents)
+                                    create_embeddings, load_markdown_documents,
+                                    split_markdown_documents)
 from src.services import CsvDataStore
 from src.tools import build_tools, describe_tools
 
@@ -44,6 +49,20 @@ class BrokenKnowledgeSearcher:
         raise RuntimeError("test retrieval failure")
 
 
+class Fake1024Embeddings(Embeddings):
+    """Deterministic local stand-in for the cloud vector dimension."""
+
+    dimensions = 1024
+    provider = "aliyun"
+    model = "text-embedding-v4"
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return [[0.0] * 1024 for _ in texts]
+
+    def embed_query(self, text: str) -> list[float]:
+        return [0.0] * 1024
+
+
 def tool_call(name: str, args: dict, call_id: str) -> dict:
     return {"name": name, "args": args, "id": call_id, "type": "tool_call"}
 
@@ -51,7 +70,8 @@ def tool_call(name: str, args: dict, call_id: str) -> dict:
 class RagPipelineTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.knowledge_base = build_knowledge_base()
+        cls.knowledge_base = build_knowledge_base(
+            settings=EmbeddingSettings(provider="local_hash"))
 
     def test_four_markdown_documents_load_with_sources(self) -> None:
         documents = load_markdown_documents(Path("knowledge"))
@@ -86,6 +106,145 @@ class RagPipelineTests(unittest.TestCase):
         first = embeddings.embed_query("库存风险")
         self.assertEqual(first, embeddings.embed_documents(["库存风险"])[0])
         self.assertAlmostEqual(sum(value * value for value in first), 1.0)
+
+    def test_default_provider_is_local_without_cloud_credentials(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            settings = load_embedding_settings(Path("missing-embedding.env"))
+        self.assertEqual(settings.provider, "local_hash")
+        self.assertIsInstance(create_embeddings(settings), LocalHashEmbeddings)
+
+    def test_aliyun_requires_independent_key_and_base_url(self) -> None:
+        with patch.dict("os.environ", {"EMBEDDING_PROVIDER": "aliyun"}, clear=True):
+            with self.assertRaisesRegex(ValueError, "EMBEDDING_API_KEY"):
+                load_embedding_settings(Path("missing-embedding.env"))
+        with patch.dict("os.environ", {
+            "EMBEDDING_PROVIDER": "aliyun", "EMBEDDING_API_KEY": "fake-key",
+        }, clear=True):
+            with self.assertRaisesRegex(ValueError, "EMBEDDING_BASE_URL"):
+                load_embedding_settings(Path("missing-embedding.env"))
+
+    def test_aliyun_base_url_must_be_beijing_openai_compatible_endpoint(self) -> None:
+        for url in ("https://workspace.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
+                    "https://workspace.cn-beijing.maas.aliyuncs.com/api/v1"):
+            with patch.dict("os.environ", {
+                "EMBEDDING_PROVIDER": "aliyun", "EMBEDDING_API_KEY": "fake-key",
+                "EMBEDDING_BASE_URL": url,
+            }, clear=True):
+                with self.assertRaisesRegex(ValueError, "北京地域"):
+                    load_embedding_settings(Path("missing-embedding.env"))
+
+    def test_aliyun_embeddings_are_configured_without_network_call(self) -> None:
+        settings = EmbeddingSettings(
+            provider="aliyun", api_key="fake-key",
+            base_url="https://workspace.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+        )
+        with patch("src.rag.knowledge_base.OpenAIEmbeddings") as constructor:
+            create_embeddings(settings)
+        self.assertEqual(constructor.call_count, 1)
+        params = constructor.call_args.kwargs
+        self.assertEqual(params["model"], "text-embedding-v4")
+        self.assertEqual(params["dimensions"], 1024)
+        self.assertEqual(params["base_url"], settings.base_url)
+        self.assertEqual(params["api_key"], "fake-key")
+        self.assertEqual(params["timeout"], 20)
+        self.assertEqual(params["max_retries"], 0)
+        self.assertEqual(params["chunk_size"], 10)
+        self.assertFalse(params["tiktoken_enabled"])
+        self.assertFalse(params["check_embedding_ctx_length"])
+
+    def test_aliyun_index_and_query_use_raw_text_without_transformers(self) -> None:
+        settings = EmbeddingSettings(
+            provider="aliyun", api_key="fake-key",
+            base_url="https://workspace.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+        )
+        embeddings = create_embeddings(settings)
+        requests = []
+
+        def fake_create(*, input, **kwargs):
+            requests.append(input)
+            items = input if isinstance(input, list) else [input]
+            return {"data": [{"embedding": [0.0] * 1024} for _ in items]}
+
+        original_import = builtins.__import__
+
+        def reject_transformers(name, *args, **kwargs):
+            if name == "transformers" or name.startswith("transformers."):
+                raise AssertionError("transformers import was attempted")
+            return original_import(name, *args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as directory:
+            Path(directory, "guide.md").write_text(
+                "# 库存指南\n## 风险规则\n可售天数低于七天需要核对补货。",
+                encoding="utf-8",
+            )
+            with patch.object(embeddings._inner.client, "create",
+                              side_effect=fake_create), \
+                    patch("builtins.__import__", side_effect=reject_transformers):
+                knowledge_base = build_knowledge_base(
+                    directory=Path(directory), embeddings=embeddings,
+                    settings=settings,
+                )
+                results = knowledge_base.search("库存补货风险", k=1)
+                self.assertEqual(len(results["matches"]), 1)
+                before_oversize = len(requests)
+                with self.assertRaisesRegex(ValueError, "UTF-8字节限制"):
+                    embeddings.embed_query("x" * 4097)
+
+        self.assertEqual(len(requests), 2)
+        self.assertTrue(all(isinstance(request, list) for request in requests))
+        self.assertTrue(all(isinstance(item, str)
+                            for request in requests for item in request))
+        self.assertEqual(len(requests), before_oversize)
+
+    def test_embedding_dimensions_and_provider_use_separate_collections(self) -> None:
+        local = build_knowledge_base(
+            embeddings=LocalHashEmbeddings(),
+            settings=EmbeddingSettings(provider="local_hash"),
+        )
+        aliyun = build_knowledge_base(
+            embeddings=Fake1024Embeddings(),
+            settings=EmbeddingSettings(provider="aliyun", api_key="fake",
+                                       base_url="https://workspace.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"),
+        )
+        self.assertEqual(local.embedding_dimensions, 384)
+        self.assertEqual(aliyun.embedding_dimensions, 1024)
+        self.assertNotEqual(local.vector_store._collection.name,
+                            aliyun.vector_store._collection.name)
+
+    def test_injected_embedding_provider_or_dimension_mismatch_is_rejected(self) -> None:
+        aliyun_settings = EmbeddingSettings(provider="aliyun", api_key="fake",
+                                            base_url="https://workspace.cn-beijing.maas.aliyuncs.com/compatible-mode/v1")
+        with self.assertRaisesRegex(ValueError, "必须与aliyun provider"):
+            build_knowledge_base(embeddings=LocalHashEmbeddings(),
+                                 settings=aliyun_settings)
+        with self.assertRaisesRegex(ValueError, "local_hash配置必须使用"):
+            build_knowledge_base(embeddings=Fake1024Embeddings(),
+                                 settings=EmbeddingSettings(provider="local_hash"))
+        with self.assertRaisesRegex(ValueError, "必须同时提供"):
+            build_knowledge_base(embeddings=Fake1024Embeddings())
+        with self.assertRaisesRegex(ValueError, "北京地域"):
+            build_knowledge_base(
+                embeddings=Fake1024Embeddings(),
+                settings=EmbeddingSettings(provider="aliyun", api_key="fake",
+                                           base_url="https://example.invalid/v1"),
+            )
+
+    def test_embedding_api_errors_redact_embedding_key(self) -> None:
+        secret = "embedding-secret-value"
+
+        class FailingEmbeddings(Fake1024Embeddings):
+            def embed_query(self, text: str) -> list[float]:
+                raise RuntimeError(f"authorization failed: {secret}")
+
+        settings = EmbeddingSettings(provider="aliyun", api_key=secret,
+                                     base_url="https://workspace.cn-beijing.maas.aliyuncs.com/compatible-mode/v1")
+        with patch("src.rag.knowledge_base.OpenAIEmbeddings",
+                   return_value=FailingEmbeddings()):
+            protected = create_embeddings(settings)
+        with self.assertRaises(RuntimeError) as caught:
+            protected.embed_query("库存风险")
+        self.assertNotIn(secret, str(caught.exception))
+        self.assertIn("[REDACTED]", str(caught.exception))
 
 
 class RagToolAndAgentTests(unittest.TestCase):

@@ -11,9 +11,12 @@ class ModelRequestError(RuntimeError):
     """A sanitized provider failure; callers must not retry another model."""
 
 
-def redact(text: str, secret: str) -> str:
-    """Remove the exact configured secret and common key/bearer representations."""
-    cleaned = text.replace(secret, "[REDACTED]") if secret else text
+def redact(text: str, secret: str, *additional_secrets: str) -> str:
+    """Remove configured secrets and common key/bearer representations."""
+    cleaned = text
+    for configured_secret in (secret, *additional_secrets):
+        if configured_secret:
+            cleaned = cleaned.replace(configured_secret, "[REDACTED]")
     cleaned = re.sub(r"sk-[A-Za-z0-9_.-]+", "[REDACTED]", cleaned)
     return re.sub(r"(?i)Bearer\s+[^\s\"']+", "Bearer [REDACTED]", cleaned)
 

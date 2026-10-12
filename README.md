@@ -1,8 +1,8 @@
 # EcomAgent
 
-基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。Phase 1至Phase 6已完成，Phase 7 Agent Evaluation Baseline 已开发并完成 Fake 回答人工复核，等待最终验收。项目用于学习和面试展示，所有数据均为模拟数据，不代表真实商家经营情况。
+基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。Phase 1–7 已完成；Phase 8 已实现云端 Embedding 配置能力、固定检索评估和会话内 Memory。真实阿里云 Embedding 验收因连接与当前运行环境限制未完成；Qwen API 未在 Phase 8 验收。项目用于学习和面试展示，所有业务数据均为模拟数据，不代表真实商家经营情况。
 
-V1业务范围只有商品、销售、库存、评价。模型可从5个业务数据Tool和1个运营知识检索Tool中自主选择；CSV Service负责确定性数据，RAG负责非结构化规则。综合分析使用Pydantic校验最终JSON；没有跨问题Memory或Streamlit，也没有使用LangGraph。
+V1业务范围只有商品、销售、库存、评价。模型可从5个业务数据Tool和1个运营知识检索Tool中自主选择；CSV Service负责确定性数据，RAG负责非结构化规则。综合分析使用Pydantic校验最终JSON；交互模式使用最多4轮的进程内Memory，不持久化；没有使用LangGraph。
 
 ## 当前交付
 
@@ -24,6 +24,8 @@ V1业务范围只有商品、销售、库存、评价。模型可从5个业务�
 - [Phase 7评估案例](evals/phase7_cases.json)：固定问题、必需/允许工具、数据证据及人工复核项。
 - [Phase 7 Offline结果](docs/phase7_offline_results.json)：Fake Model执行、真实本地Tools/RAG证据和Top-3检索记录。
 - [Phase 7 Live结果](docs/phase7_live_results.json)：限定的Qwen验收记录；连接失败后按规则停止，没有重试。
+- [Phase 8阶段报告](docs/phase8_report.md)：Embedding配置与检索对照、4轮会话Memory、离线验收及真实 API 验收限制。
+- [Phase 8检索评估脚本](scripts/evaluate_retrieval.py)：复用C07–C09，记录Top-3、Recall@3、MRR；C08证据充分性单独人工复核。
 - [工具定义快照](docs/tool_catalog.json)：可查看后续模型将接收的工具名称、用途和JSON参数schema，不含数据对象或文件路径。
 
 ## 运行
@@ -41,24 +43,32 @@ python -m scripts.demo_tools
 python -m unittest discover -s tests -v
 ```
 
-Windows激活命令为 `.venv\Scripts\activate`。数据生成、服务与工具演示、unittest全部离线，无需API Key。Phase 4运行与真实验收需要配置、网络及API调用额度。
+Windows激活命令为 `.venv\Scripts\activate`。数据生成、服务与工具演示、unittest全部离线，无需API Key。普通 RAG 默认使用 LocalHash；只有显式设置 `EMBEDDING_PROVIDER=aliyun` 才会使用北京地域百炼 Embedding。
 
 本机已存在PyCharm项目虚拟环境，当前Phase不要求重建环境。其他克隆环境请先安装requirements，复制.env.example为.env并自行填入配置。环境变量优先于.env。不要把密钥放入命令参数或提交到Git。Offline Evaluation不调用外部模型；Live Evaluation会请求Qwen API，且只允许固定案例C06和C09。Live遇到API连接错误后停止，不自动重试。
+
+交互式连续对话在同一进程内复用 Agent 和 Memory，空行或 `/quit` 结束。Memory 只保留最近4轮完成的用户问题与最终回答；重新启动进程后历史清空。历史只帮助理解指代，当前业务事实仍须由本轮 Tool 查询。
 
 ```bash
 .venv/bin/python -m scripts.run_agent "SKU003现在有多少库存？" --show-tools
 .venv/bin/python -m scripts.run_agent "比较SKU002最近30天和之前30天的销售表现。" --show-tools
 .venv/bin/python -m scripts.run_analysis "分析SKU005最近30天的销售和评论变化，有什么值得关注的问题？" --show-tools
 .venv/bin/python -m scripts.run_agent "分析SKU003当前库存风险，并根据我们的库存管理规则给出建议。" --show-tools
+.venv/bin/python -m scripts.run_agent --interactive
+.venv/bin/python -m scripts.run_analysis --interactive
 .venv/bin/python -m scripts.evaluate_agent --mode offline
+.venv/bin/python -m scripts.evaluate_retrieval
 .venv/bin/python -m scripts.evaluate_agent --mode live
+.venv/bin/python -m scripts.evaluate_retrieval --provider aliyun
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python -m scripts.check_secrets
 ```
 
-PyCharm选择本项目 `.venv/bin/python`，运行模块scripts.run_agent，工作目录设为项目根目录。每次运行是独立问题，不保存上次聊天。数据截止日固定为2026-09-22，不使用电脑当天。
+`evaluate_retrieval` 默认只评估 LocalHash。云端评估命令会真实调用 Embedding API 并产生额度消耗；执行前需确认 `EMBEDDING_PROVIDER=aliyun`、`EMBEDDING_API_KEY`、`EMBEDDING_BASE_URL` 已设置，并单独授权真实调用。对照两种实现时，可重复传入 `--provider local_hash --provider aliyun`。
 
-Phase 4、5、6真实验收脚本分别为 `scripts.verify_agent_live`、`scripts.verify_analysis_live`、`scripts.verify_rag_live`。真实验收会产生API请求并更新记录，不应混入日常离线测试。RAG文档嵌入与检索完全离线，不使用API Key。
+PyCharm选择本项目 `.venv/bin/python`，运行模块scripts.run_agent，工作目录设为项目根目录。单问题命令不跨进程保存历史；`--interactive` 在当前进程会话内复用 Memory。数据截止日固定为2026-09-22，不使用电脑当天。
+
+Phase 4、5、6真实验收脚本分别为 `scripts.verify_agent_live`、`scripts.verify_analysis_live`、`scripts.verify_rag_live`。真实验收会产生API请求并更新记录，不应混入日常离线测试。LocalHash RAG完全离线；显式启用百炼 Embedding 会使用独立 `EMBEDDING_API_KEY`。
 
 ## 重建数据
 
@@ -80,7 +90,7 @@ python -m scripts.validate_mock_data --data-dir work/sample
 
 ## 预期结果
 
-Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent和run_analysis实际调用模型，show-tools打印模型选中的工具及状态。Phase 7当前全量离线测试显示 `Ran 123 tests`、`OK`。Offline Evaluation的自动结果只验证脚本化Fake响应、Agent协议和本地证据，不代表真实Qwen准确率；人工复核也只适用于固定Fake回答；Live结果只代表实际完成的固定样本。
+Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent和run_analysis实际调用模型，show-tools打印模型选中的工具及状态。Phase 8最终离线回归共 `Ran 145 tests`、`OK`。Fake/Mock 验收验证 Agent 协议、Memory 状态与本地评估器，不代表真实 Qwen 或百炼 Embedding 的质量。C08 的来源命中和证据充分性分开记录。
 
 比较基准来自数据截止日而不是电脑当天日期。默认最近30天是2026-08-24至2026-09-22；之前30天是2026-07-25至2026-08-23，两个窗口均包含首尾日期，互不重叠。
 
@@ -92,12 +102,12 @@ knowledge/             四份运营知识Markdown文档
 scripts/               生成与独立验证脚本
 src/services/          Pandas数据加载及五类查询服务
 src/tools/             参数schema、工具工厂和返回封装
-src/agent/             基础模型适配与Tool Calling Loop
+src/agent/             基础模型适配、Tool Calling Loop与会话Memory
 src/prompts/           基础与综合分析提示词
 src/models/            最终结构化输出模型（不含业务计算）
-src/rag/               文档加载、切分、本地Embedding与Chroma检索
+src/rag/               文档加载、切分、LocalHash/百炼Embedding与Chroma检索
 src/config.py          本地配置读取
-tests/                 数据、服务、工具、循环与安全的离线测试
+tests/                 数据、服务、工具、循环、Memory、RAG评估与安全的离线测试
 docs/                  设计、口径、运行结果及阶段讲解
 requirements.txt       固定直接依赖版本
 .env.example           配置变量与占位示例，不含真实密钥

@@ -14,7 +14,7 @@ from langchain_core.messages import AIMessage
 
 from src.agent.model import ModelRequestError, create_model, redact
 from src.agent.runner import ProductAgent
-from src.config import PROJECT_ROOT, load_settings
+from src.config import EmbeddingSettings, PROJECT_ROOT, load_settings
 from src.models import AnalysisReport
 from src.rag import build_knowledge_base
 from src.services import CsvDataStore
@@ -434,7 +434,8 @@ def run_offline(cases: list[dict]) -> dict:
     cpu_started = time.process_time()
     try:
         store = CsvDataStore()
-        knowledge_base = build_knowledge_base()
+        knowledge_base = build_knowledge_base(
+            settings=EmbeddingSettings(provider="local_hash"))
     except Exception as exc:
         raise SharedResourceInitializationError(
             f"共享CSV或RAG资源初始化失败（{type(exc).__name__}），尚未运行任何案例。"
@@ -481,7 +482,9 @@ def run_live(cases: list[dict]) -> dict:
     cpu_started = time.process_time()
     settings = load_settings()
     store = CsvDataStore()
-    knowledge_base = build_knowledge_base()
+    # This Live suite exercises Qwen behavior; its RAG baseline remains offline.
+    knowledge_base = build_knowledge_base(
+        settings=EmbeddingSettings(provider="local_hash"))
     agent = ProductAgent(create_model(settings), build_tools(store, knowledge_base),
                          store.as_of_date, api_key=settings.api_key)
     results, stopped_on_api_error = [], False

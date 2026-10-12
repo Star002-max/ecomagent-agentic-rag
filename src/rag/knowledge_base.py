@@ -4,17 +4,24 @@ import hashlib
 import math
 import re
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
-from src.config import PROJECT_ROOT
+from src.agent.model import redact
+from src.config import (EmbeddingSettings, PROJECT_ROOT,
+                        load_embedding_settings)
 
 
 class KnowledgeBaseError(RuntimeError):
     """The local knowledge base cannot be loaded or searched."""
+
+
+ALIYUN_MAX_INPUT_UTF8_BYTES = 4096
 
 
 class LocalHashEmbeddings(Embeddings):
@@ -47,6 +54,83 @@ class LocalHashEmbeddings(Embeddings):
 
     def embed_query(self, text: str) -> list[float]:
         return self._embed(text)
+
+
+class ProtectedEmbeddings(Embeddings):
+    """Keep provider failures useful while removing the embedding credential."""
+
+    def __init__(self, inner: Embeddings, api_key: str, *, dimensions: int,
+                 provider: str, model: str,
+                 max_input_utf8_bytes: int = ALIYUN_MAX_INPUT_UTF8_BYTES) -> None:
+        self._inner = inner
+        self._api_key = api_key
+        self.dimensions = dimensions
+        self.provider = provider
+        self.model = model
+        self.max_input_utf8_bytes = max_input_utf8_bytes
+
+    def _validate_input_size(self, texts: list[str] | str) -> None:
+        values = [texts] if isinstance(texts, str) else texts
+        for index, text in enumerate(values, start=1):
+            if len(text.encode("utf-8")) > self.max_input_utf8_bytes:
+                raise ValueError(
+                    f"Embedding输入第{index}条超过"
+                    f"{self.max_input_utf8_bytes} UTF-8字节限制；请缩短输入。"
+                )
+
+    def _call(self, method: str, texts: list[str] | str):
+        self._validate_input_size(texts)
+        try:
+            return getattr(self._inner, method)(texts)
+        except Exception as exc:
+            message = redact(str(exc), self._api_key)
+            raise RuntimeError(
+                f"Embedding请求失败（{type(exc).__name__}）：{message[:800]}"
+            ) from None
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return self._call("embed_documents", texts)
+
+    def embed_query(self, text: str) -> list[float]:
+        return self._call("embed_query", text)
+
+
+def _validate_aliyun_settings(config: EmbeddingSettings) -> None:
+    if config.model != "text-embedding-v4" or config.dimensions != 1024:
+        raise ValueError("aliyun Embedding固定使用text-embedding-v4和1024维。")
+    if not config.api_key or not config.base_url:
+        raise ValueError("aliyun Embedding缺少API Key或Base URL。")
+    url = urlsplit(config.base_url)
+    if (url.scheme != "https" or not url.hostname or url.username or url.password
+            or url.query or url.fragment
+            or not url.hostname.endswith(".cn-beijing.maas.aliyuncs.com")
+            or url.path.rstrip("/") != "/compatible-mode/v1"):
+        raise ValueError("aliyun Embedding必须使用北京地域OpenAI兼容接口Base URL。")
+
+
+def create_embeddings(settings: EmbeddingSettings | None = None) -> Embeddings:
+    """Create the explicitly selected provider; local hashing is the safe default."""
+    config = settings or load_embedding_settings()
+    if config.provider == "local_hash":
+        return LocalHashEmbeddings()
+    if config.provider != "aliyun":
+        raise ValueError("未知Embedding provider。")
+    _validate_aliyun_settings(config)
+    try:
+        embeddings = OpenAIEmbeddings(
+            model=config.model, api_key=config.api_key, base_url=config.base_url,
+            dimensions=config.dimensions, timeout=20, max_retries=0,
+            # For compatible APIs, send strings directly. The explicit byte guard
+            # below keeps inputs bounded without assuming the provider's tokenizer.
+            check_embedding_ctx_length=False,
+            chunk_size=10, tiktoken_enabled=False,
+        )
+    except Exception as exc:
+        message = redact(str(exc), config.api_key)
+        raise RuntimeError(f"Embedding客户端初始化失败：{message[:800]}") from None
+    return ProtectedEmbeddings(embeddings, config.api_key,
+                               dimensions=config.dimensions,
+                               provider=config.provider, model=config.model)
 
 
 def load_markdown_documents(directory: Path) -> list[Document]:
@@ -91,9 +175,13 @@ class KnowledgeBase:
     """Own one in-memory Chroma collection and expose a small search result."""
 
     def __init__(self, documents: list[Document], embeddings: Embeddings,
-                 *, collection_name: str = "ecomagent_operations") -> None:
+                 *, collection_name: str = "ecomagent_operations",
+                 embedding_provider: str | None = None,
+                 embedding_dimensions: int | None = None) -> None:
         if not documents:
             raise KnowledgeBaseError("不能用空文档初始化知识库。")
+        self.embedding_provider = embedding_provider or "injected"
+        self.embedding_dimensions = embedding_dimensions
         self.documents = documents
         self.vector_store = Chroma.from_documents(
             documents=documents,
@@ -125,8 +213,40 @@ class KnowledgeBase:
 def build_knowledge_base(
     directory: Path = PROJECT_ROOT / "knowledge",
     embeddings: Embeddings | None = None,
+    *,
+    settings: EmbeddingSettings | None = None,
 ) -> KnowledgeBase:
-    """Build the complete local pipeline in one explicit composition function."""
+    """Build a fresh provider-isolated in-memory index for the selected embedding."""
+    if settings is None:
+        if embeddings is not None and isinstance(embeddings, LocalHashEmbeddings):
+            config = EmbeddingSettings(provider="local_hash")
+        elif embeddings is not None:
+            raise ValueError("注入非LocalHash Embeddings时必须同时提供匹配的EmbeddingSettings。")
+        else:
+            config = load_embedding_settings()
+    else:
+        config = settings
+    if config.provider == "aliyun":
+        _validate_aliyun_settings(config)
+    selected = embeddings if embeddings is not None else create_embeddings(config)
+    if config.provider == "local_hash":
+        if not isinstance(selected, LocalHashEmbeddings):
+            raise ValueError("local_hash配置必须使用LocalHashEmbeddings。")
+        dimensions = selected.dimensions
+    elif config.provider == "aliyun":
+        selected_provider = getattr(selected, "provider", "aliyun"
+                                    if isinstance(selected, OpenAIEmbeddings) else None)
+        selected_model = getattr(selected, "model", config.model)
+        selected_dimensions = getattr(selected, "dimensions", None)
+        if (selected_provider != "aliyun" or selected_model != config.model
+                or selected_dimensions != config.dimensions):
+            raise ValueError("注入的Embeddings必须与aliyun provider、模型和维度配置一致。")
+        dimensions = config.dimensions
+    else:
+        raise ValueError("未知Embedding provider。")
     documents = load_markdown_documents(directory)
     chunks = split_markdown_documents(documents)
-    return KnowledgeBase(chunks, embeddings or LocalHashEmbeddings())
+    return KnowledgeBase(chunks, selected,
+                         collection_name=f"ecomagent_operations_{config.provider}_{dimensions}d",
+                         embedding_provider=config.provider,
+                         embedding_dimensions=dimensions)

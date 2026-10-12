@@ -18,11 +18,18 @@ def git(*args: str) -> bytes:
 
 def main() -> None:
     local = dotenv_values(PROJECT_ROOT / ".env")
-    key = os.environ.get("LLM_API_KEY") or local.get("LLM_API_KEY") or ""
+    keys = {
+        value for value in (
+            os.environ.get("LLM_API_KEY") or local.get("LLM_API_KEY") or "",
+            os.environ.get("EMBEDDING_API_KEY")
+            or local.get("EMBEDDING_API_KEY") or "",
+        ) if value
+    }
     patterns = re.compile(rb"sk-[A-Za-z0-9_.-]{20,}")
 
     def contains_secret(content: bytes) -> bool:
-        return bool((key and key.encode() in content) or patterns.search(content))
+        return bool(any(key.encode() in content for key in keys)
+                    or patterns.search(content))
 
     failures = []
     if git("ls-files", "--", ".env").strip():

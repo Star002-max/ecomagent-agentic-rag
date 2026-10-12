@@ -14,6 +14,7 @@ from src.prompts.basic import system_prompt
 from src.tools import describe_tools
 from src.tools.results import result_json
 
+from .memory import ConversationMemory
 from .model import redact, safe_request_error
 
 
@@ -47,7 +48,8 @@ class ProductAgent:
 
     def __init__(self, model: Any, tools: list[StructuredTool], as_of_date: str,
                  *, api_key: str = "", max_model_calls: int = 6,
-                 max_tool_calls: int = 8) -> None:
+                 max_tool_calls: int = 8,
+                 memory: ConversationMemory | None = None) -> None:
         if max_model_calls < 1 or max_tool_calls < 1:
             raise ValueError("循环和工具调用上限必须大于0。")
         if len({tool.name for tool in tools}) != len(tools):
@@ -58,6 +60,7 @@ class ProductAgent:
         self._secret = api_key
         self._max_model_calls = max_model_calls
         self._max_tool_calls = max_tool_calls
+        self._memory = memory
 
     def run(self, question: str) -> AgentResult:
         """Execute model-selected calls, returning facts and compact audit data."""
@@ -74,8 +77,10 @@ class ProductAgent:
         """Shared bounded loop; output validation never performs calculations."""
         if not isinstance(question, str) or not question.strip():
             raise ValueError("问题不能为空。")
-        messages = [SystemMessage(content=prompt),
-                    HumanMessage(content=question.strip())]
+        messages = [SystemMessage(content=prompt)]
+        if self._memory is not None:
+            messages.extend(self._memory.to_messages())
+        messages.append(HumanMessage(content=question.strip()))
         trace: list[dict] = []
         seen_ids: set[str] = set()
         structure_repairs = 0
@@ -118,7 +123,10 @@ class ProductAgent:
                             continue
                         structured = report.model_dump(mode="json")
                         safe_answer = report.model_dump_json()
-                    return AgentResult("completed", safe_answer, number, trace, structured)
+                    result = AgentResult("completed", safe_answer, number, trace, structured)
+                    if self._memory is not None:
+                        self._memory.add_turn(question.strip(), safe_answer)
+                    return result
                 if len(trace) + len(response.tool_calls) > self._max_tool_calls:
                     return AgentResult("limit_reached", "达到工具调用上限，任务未完成。", number, trace)
                 if awaiting_structure_repair:
