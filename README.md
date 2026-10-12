@@ -1,15 +1,19 @@
 # EcomAgent
 
-基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。Phase 1–8 已完成；Phase 8 的百炼 `text-embedding-v4` 云端 Embedding → Chroma → Retriever 检索链路已由固定 C07–C09 对照验收。该验收不包含完整 LLM Agent 问答链路，Qwen Chat API 未在本次云端检索测试中调用。项目用于学习和面试展示，所有业务数据均为模拟数据，不代表真实商家经营情况。
+基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。Phase 1–8 已完成；Phase 8 的百炼 `text-embedding-v4` 云端 Embedding → Chroma → Retriever 检索链路已由固定 C07–C09 对照验收。该验收不包含完整 LLM Agent 问答链路，Qwen Chat API 未在本次云端检索测试中调用。Phase 9 补充架构说明、可复现离线 Demo 与面试材料。所有业务数据均为模拟数据，不代表真实商家经营情况。
 
 V1业务范围只有商品、销售、库存、评价。模型可从5个业务数据Tool和1个运营知识检索Tool中自主选择；CSV Service负责确定性数据，RAG负责非结构化规则。综合分析使用Pydantic校验最终JSON；交互模式使用最多4轮的进程内Memory，不持久化；没有使用LangGraph。
 
 ## 当前交付
 
+- [系统架构图与数据流](docs/architecture.md)：Agent、Tool、Service、CSV、RAG、Embedding、Chroma 与 Memory 的职责和调用关系。
+- [完全离线 Agent Demo](docs/offline_demo.md)：Fake Model + 真实本地 CSV Tools/LocalHash RAG，展示连续追问和工具往返，不需要 API Key。
+- [简历与面试准备](docs/resume_and_interview.md)：项目描述、1分钟介绍、常见架构追问与参考答题要点。
+
 - 15 个 SKU，180 天每日销售和库存记录。
 - 四份 CSV：商品15行、销售2700行、库存2700行、评价5400行。
 - 固定随机种子42、固定截止日2026-09-22，可复现生成结果。
-- 107个离线测试，另有各阶段显式真实API验收记录及15个SKU的模拟数据比较证据。
+- 145项离线测试（Phase 8 全量回归结果），另有各阶段显式真实API验收记录及15个SKU的模拟数据比较证据。
 - 五个明确场景和十个正常对照商品，具体见 [数据设计](docs/mock_data_design.md)。
 - 商品、销售、周期比较、库存、评价的普通Python查询函数；区分未知商品、无数据、部分数据和数值零。
 - [Phase 2阶段报告](docs/phase2_report.md)：接口、执行流程、设计问题、测试、阅读顺序及带参考答案的练习。
@@ -41,6 +45,7 @@ python -m scripts.validate_mock_data
 python -m scripts.demo_services
 python -m scripts.demo_tools --schemas-only
 python -m scripts.demo_tools
+python -m scripts.demo_phase9
 python -m unittest discover -s tests -v
 ```
 
@@ -66,6 +71,8 @@ Windows激活命令为 `.venv\Scripts\activate`。数据生成、服务与工具
 ```
 
 `evaluate_retrieval` 默认只评估 LocalHash。云端评估命令会真实调用 Embedding API 并产生额度消耗；执行前需确认 `EMBEDDING_PROVIDER=aliyun`、`EMBEDDING_API_KEY`、`EMBEDDING_BASE_URL` 已设置，并单独授权真实调用。对照两种实现时，可重复传入 `--provider local_hash --provider aliyun`。
+
+`scripts.demo_phase9` 会显式注入 `LocalHashEmbeddings` 和脚本化 Fake Model，不读取 Chat/Embedding 密钥、不调用云端 API。它展示的是实际 Agent Tool Calling Loop、CSV 查询、RAG 检索和同一 Memory 上下文中的连续两轮；Fake Model 的固定回答仅用于演示控制流，不代表 LLM 生成质量。架构和数据流见 [系统架构图](docs/architecture.md)。
 
 PyCharm选择本项目 `.venv/bin/python`，运行模块scripts.run_agent，工作目录设为项目根目录。单问题命令不跨进程保存历史；`--interactive` 在当前进程会话内复用 Memory。数据截止日固定为2026-09-22，不使用电脑当天。
 
@@ -134,6 +141,6 @@ AGENTS.md              后续阶段固定协作与提交规则
 - limit_reached：达到6次模型请求或8次工具调用上限，表示未完成；不能当作正常回答。
 - 修改CSV后需重新创建数据快照；CLI每次运行会重新读取。
 
-## Git 阶段提交
+## Git 与安全
 
-Phase 1至Phase 6已完成。Phase 7尚未提交，需先人工复盘与验收；不要自动提交。提交前运行check_secrets并核对Git Status和Diff，确认`.env`仍被忽略且没有敏感信息。Phase 7建议Commit Message：`feat: add agent evaluation baseline`。
+各阶段实现和验收记录均通过 Git 历史跟踪。提交前使用 `python -m scripts.check_secrets` 检查 `.env` 忽略状态和待提交内容；不要提交本地密钥。
