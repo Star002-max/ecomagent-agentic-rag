@@ -1,0 +1,527 @@
+{
+  "dataset_version": "1.0",
+  "data_as_of": "2026-09-22",
+  "rag_top_k": 3,
+  "cases": [
+    {
+      "id": "C01",
+      "title": "SKU001 product information",
+      "entrypoint": "run",
+      "question": "SKU001是什么商品？当前价格和评分是多少？",
+      "required_tools": [
+        "get_product_info"
+      ],
+      "allowed_tools": [
+        "get_product_info"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "tool_evidence_check",
+        "answer_fact_review"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "get_product_info",
+          "path": "data.product.product_name",
+          "equals": "桌面收纳盒"
+        },
+        {
+          "tool": "get_product_info",
+          "path": "data.product.price",
+          "equals": 39.9,
+          "tolerance": 0.001
+        },
+        {
+          "tool": "get_product_info",
+          "path": "data.product.rating",
+          "equals": 4.5833,
+          "tolerance": 0.001
+        }
+      ],
+      "answer_fact_checks": [
+        "商品名称、价格和评分与商品 Tool 返回一致。"
+      ],
+      "evidence_limit_checks": []
+    },
+    {
+      "id": "C02",
+      "title": "SKU003 inventory single tool",
+      "entrypoint": "run",
+      "question": "SKU003当前库存和估算可售天数是多少？",
+      "required_tools": [
+        "get_inventory_data"
+      ],
+      "allowed_tools": [
+        "get_inventory_data"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "tool_evidence_check",
+        "answer_fact_review",
+        "evidence_limit_compliance"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "get_inventory_data",
+          "path": "data.current_inventory",
+          "equals": 50
+        },
+        {
+          "tool": "get_inventory_data",
+          "path": "data.estimated_stock_days",
+          "equals": 0.6487889273356402,
+          "tolerance": 0.02
+        }
+      ],
+      "answer_fact_checks": [
+        "库存数量和可售天数与库存 Tool 返回一致。"
+      ],
+      "evidence_limit_checks": [
+        "明确说明可售天数是基于历史销量的估算，不是需求预测。"
+      ]
+    },
+    {
+      "id": "C03",
+      "title": "SKU001 two-period sales comparison",
+      "entrypoint": "run_analysis",
+      "question": "分析SKU001最近30天表现，销量下降主要体现在哪些指标？",
+      "required_tools": [
+        "compare_sales_periods"
+      ],
+      "allowed_tools": [
+        "compare_sales_periods",
+        "get_product_info"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "structured_output_validity",
+        "tool_evidence_check",
+        "answer_fact_review",
+        "evidence_limit_compliance"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.current.metrics.units",
+          "equals": 1205
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.previous.metrics.units",
+          "equals": 1833
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.current.metrics.sessions",
+          "equals": 18226
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.conversion_rate_percentage_point_change",
+          "equals": 0.02448744244751,
+          "tolerance": 0.01
+        }
+      ],
+      "answer_fact_checks": [
+        "描述销量与 Sessions 同期下降、Conversion Rate 基本稳定。"
+      ],
+      "evidence_limit_checks": [
+        "不把同期变化表述为已证明的外部原因或因果关系。"
+      ]
+    },
+    {
+      "id": "C04",
+      "title": "SKU002 two-period sales comparison",
+      "entrypoint": "run_analysis",
+      "question": "SKU002最近表现变差了吗？主要体现在哪里？",
+      "required_tools": [
+        "compare_sales_periods"
+      ],
+      "allowed_tools": [
+        "compare_sales_periods",
+        "get_product_info"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "structured_output_validity",
+        "tool_evidence_check",
+        "answer_fact_review",
+        "evidence_limit_compliance"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.current.metrics.sessions",
+          "equals": 29018
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.previous.metrics.sessions",
+          "equals": 29038
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.current.metrics.conversion_rate",
+          "equals": 0.039079192225515196,
+          "tolerance": 0.0001
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.previous.metrics.conversion_rate",
+          "equals": 0.06501825194572629,
+          "tolerance": 0.0001
+        }
+      ],
+      "answer_fact_checks": [
+        "指出 Sessions 基本稳定而 Conversion Rate 明显下降。"
+      ],
+      "evidence_limit_checks": [
+        "不虚构转化下降原因，说明现有数据不能证明原因。"
+      ]
+    },
+    {
+      "id": "C05",
+      "title": "SKU005 review change",
+      "entrypoint": "run",
+      "question": "SKU005最近30天的评价和评分有什么变化？",
+      "required_tools": [
+        "get_review_data"
+      ],
+      "allowed_tools": [
+        "get_review_data"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "tool_evidence_check",
+        "answer_fact_review",
+        "evidence_limit_compliance"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "get_review_data",
+          "path": "data.metrics.average_rating",
+          "equals": 2.1,
+          "tolerance": 0.01
+        },
+        {
+          "tool": "get_review_data",
+          "path": "data.metrics.low_rating_count",
+          "equals": 47
+        },
+        {
+          "tool": "get_review_data",
+          "path": "data.rating_change",
+          "equals": -2.5833333333333335,
+          "tolerance": 0.02
+        }
+      ],
+      "answer_fact_checks": [
+        "评分、低分评价数和评分变化与评价 Tool 返回一致。"
+      ],
+      "evidence_limit_checks": [
+        "不把当前评价记录推断为完整的评价总体。"
+      ]
+    },
+    {
+      "id": "C06",
+      "title": "SKU005 sales and review analysis",
+      "entrypoint": "run_analysis",
+      "question": "分析SKU005最近30天的销售和评论变化，有什么值得关注的问题？",
+      "required_tools": [
+        "compare_sales_periods",
+        "get_review_data"
+      ],
+      "allowed_tools": [
+        "compare_sales_periods",
+        "get_review_data",
+        "get_product_info"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "structured_output_validity",
+        "tool_evidence_check",
+        "answer_fact_review",
+        "evidence_limit_compliance"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.current.metrics.units",
+          "equals": 1276
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.changes.sessions.relative_change",
+          "equals": 0.000558001116002232,
+          "tolerance": 0.001
+        },
+        {
+          "tool": "get_review_data",
+          "path": "data.metrics.average_rating",
+          "equals": 2.1,
+          "tolerance": 0.01
+        },
+        {
+          "tool": "get_review_data",
+          "path": "data.metrics.low_rating_count",
+          "equals": 47
+        },
+        {
+          "tool": "compare_sales_periods",
+          "path": "data.previous.metrics.units",
+          "equals": 2130
+        }
+      ],
+      "answer_fact_checks": [
+        "销售和评价事实、以及建议均能对应到相应 Tool 证据。"
+      ],
+      "evidence_limit_checks": [
+        "将销售与评价同期变化和已证明因果区分开。"
+      ]
+    },
+    {
+      "id": "C07",
+      "title": "Direct inventory rule retrieval",
+      "entrypoint": "run",
+      "question": "我们的库存管理规则中，可售天数如何划分风险等级？",
+      "required_tools": [
+        "search_operation_knowledge"
+      ],
+      "allowed_tools": [
+        "search_operation_knowledge"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "rag_source_hit_rate",
+        "answer_fact_review"
+      ],
+      "rag_query": "可售天数库存风险分级",
+      "expected_rag_sources": [
+        "inventory_management.md"
+      ],
+      "answer_fact_checks": [
+        "库存风险阈值的概括与实际检索片段一致。"
+      ],
+      "evidence_limit_checks": []
+    },
+    {
+      "id": "C08",
+      "title": "Paraphrased inventory rule retrieval",
+      "entrypoint": "run",
+      "question": "如果现有余量照最近销量大概只能卖几天，应该优先做什么？",
+      "required_tools": [
+        "search_operation_knowledge"
+      ],
+      "allowed_tools": [
+        "search_operation_knowledge"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "rag_source_hit_rate",
+        "answer_fact_review"
+      ],
+      "rag_query": "余量按最近销售速度只能卖几天应该优先处理什么",
+      "expected_rag_sources": [
+        "inventory_management.md"
+      ],
+      "answer_fact_checks": [
+        "语义改写问题检索到库存规则，建议忠实于实际检索片段。"
+      ],
+      "evidence_limit_checks": []
+    },
+    {
+      "id": "C09",
+      "title": "SKU003 inventory plus operation knowledge",
+      "entrypoint": "run",
+      "question": "分析 SKU003 当前库存风险，并根据我们的库存管理规则给出建议。",
+      "required_tools": [
+        "get_inventory_data",
+        "search_operation_knowledge"
+      ],
+      "allowed_tools": [
+        "get_inventory_data",
+        "search_operation_knowledge"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "rag_source_hit_rate",
+        "tool_evidence_check",
+        "answer_fact_review",
+        "evidence_limit_compliance"
+      ],
+      "rag_query": "库存风险分级和补货建议",
+      "expected_rag_sources": [
+        "inventory_management.md"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "get_inventory_data",
+          "path": "data.current_inventory",
+          "equals": 50
+        },
+        {
+          "tool": "get_inventory_data",
+          "path": "data.estimated_stock_days",
+          "equals": 0.6487889273356402,
+          "tolerance": 0.02
+        }
+      ],
+      "answer_fact_checks": [
+        "库存数字来自业务 Tool，风险阈值及建议来自检索片段。"
+      ],
+      "evidence_limit_checks": [
+        "说明可售天数是历史销量估算，且不含在途补货。"
+      ]
+    },
+    {
+      "id": "C10",
+      "title": "Unknown SKU",
+      "entrypoint": "run_analysis",
+      "question": "分析SKU999最近的商品表现。",
+      "required_tools": [
+        "get_product_info"
+      ],
+      "allowed_tools": [
+        "get_product_info"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "structured_output_validity",
+        "tool_evidence_check",
+        "failure_handling",
+        "answer_fact_review"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "get_product_info",
+          "path": "status",
+          "equals": "not_found"
+        }
+      ],
+      "expected_failure": {
+        "tool": "get_product_info",
+        "result_status": "not_found"
+      },
+      "answer_fact_checks": [
+        "明确 SKU 不存在、risk_level 为 unknown，且不编造商品指标。"
+      ],
+      "evidence_limit_checks": [
+        "明确无商品数据，因此无法对商品表现作结论。"
+      ]
+    },
+    {
+      "id": "C11",
+      "title": "Partial date coverage",
+      "entrypoint": "run",
+      "question": "查询SKU001在2026-09-22到2026-09-23的销售数据。",
+      "required_tools": [
+        "get_sales_data"
+      ],
+      "allowed_tools": [
+        "get_sales_data"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "tool_evidence_check",
+        "failure_handling",
+        "answer_fact_review"
+      ],
+      "expected_tool_facts": [
+        {
+          "tool": "get_sales_data",
+          "path": "status",
+          "equals": "partial"
+        },
+        {
+          "tool": "get_sales_data",
+          "path": "data.coverage.observed_days",
+          "equals": 1
+        },
+        {
+          "tool": "get_sales_data",
+          "path": "data.coverage.expected_days",
+          "equals": 2
+        }
+      ],
+      "expected_failure": {
+        "tool": "get_sales_data",
+        "result_status": "partial"
+      },
+      "answer_fact_checks": [
+        "说明数据覆盖为 1/2 天，与 Tool 返回一致。"
+      ],
+      "evidence_limit_checks": [
+        "不将缺失日期补零，也不把部分覆盖描述为完整周期。"
+      ]
+    },
+    {
+      "id": "C12",
+      "title": "Business tool argument failure",
+      "entrypoint": "run",
+      "question": "查询SKU003的当前库存。",
+      "required_tools": [
+        "get_inventory_data"
+      ],
+      "allowed_tools": [
+        "get_inventory_data"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "failure_handling",
+        "answer_fact_review"
+      ],
+      "expected_failure": {
+        "tool": "get_inventory_data",
+        "result_status": "error",
+        "error_code": "invalid_arguments"
+      },
+      "answer_fact_checks": [
+        "说明库存查询参数错误，不能描述成成功查询，也不编造库存数量。"
+      ],
+      "evidence_limit_checks": [
+        "参数错误导致本次没有可用库存数据，不能断言库存数量。"
+      ]
+    },
+    {
+      "id": "C13",
+      "title": "RAG retrieval failure",
+      "entrypoint": "run",
+      "question": "按内部库存知识给出处理建议。",
+      "required_tools": [
+        "search_operation_knowledge"
+      ],
+      "allowed_tools": [
+        "search_operation_knowledge"
+      ],
+      "applicable_metrics": [
+        "required_tool_recall",
+        "tool_selection_precision",
+        "failure_handling",
+        "answer_fact_review"
+      ],
+      "expected_failure": {
+        "tool": "search_operation_knowledge",
+        "result_status": "error",
+        "error_code": "retrieval_error"
+      },
+      "answer_fact_checks": [
+        "说明知识检索失败，且不声称成功检索了知识片段。"
+      ],
+      "evidence_limit_checks": [
+        "没有检索证据时，不把建议表述为内部规则支持的结论。"
+      ]
+    }
+  ]
+}

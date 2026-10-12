@@ -1,6 +1,6 @@
 # EcomAgent
 
-基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。当前已完成Phase 1至Phase 6：模拟数据、Pandas服务、Tools、真实Qwen工具调用循环、Multi-Tool、Structured Output和本地RAG知识库。项目用于学习和面试展示，所有数据均为模拟数据，不代表真实商家经营情况。
+基于 LangChain + RAG 的智能商品数据分析 Agent 学习项目。Phase 1至Phase 6已完成，Phase 7 Agent Evaluation Baseline 已开发并完成 Fake 回答人工复核，等待最终验收。项目用于学习和面试展示，所有数据均为模拟数据，不代表真实商家经营情况。
 
 V1业务范围只有商品、销售、库存、评价。模型可从5个业务数据Tool和1个运营知识检索Tool中自主选择；CSV Service负责确定性数据，RAG负责非结构化规则。综合分析使用Pydantic校验最终JSON；没有跨问题Memory或Streamlit，也没有使用LangGraph。
 
@@ -20,6 +20,10 @@ V1业务范围只有商品、销售、库存、评价。模型可从5个业务�
 - [Phase 5真实验收记录](docs/phase5_live_results.json)：SKU001和SKU005的工具证据与结构化结果。
 - [Phase 6阶段报告](docs/phase6_report.md)：Markdown加载、切分、本地Embedding、Chroma检索和RAG Tool集成。
 - [Phase 6真实验收记录](docs/phase6_live_results.json)：SKU003库存数据与库存规则的真实综合回答。
+- [Phase 7阶段报告](docs/phase7_report.md)：13个固定评估案例、Offline/Live边界、指标、结果、RAG检索基线和学习题。
+- [Phase 7评估案例](evals/phase7_cases.json)：固定问题、必需/允许工具、数据证据及人工复核项。
+- [Phase 7 Offline结果](docs/phase7_offline_results.json)：Fake Model执行、真实本地Tools/RAG证据和Top-3检索记录。
+- [Phase 7 Live结果](docs/phase7_live_results.json)：限定的Qwen验收记录；连接失败后按规则停止，没有重试。
 - [工具定义快照](docs/tool_catalog.json)：可查看后续模型将接收的工具名称、用途和JSON参数schema，不含数据对象或文件路径。
 
 ## 运行
@@ -39,13 +43,15 @@ python -m unittest discover -s tests -v
 
 Windows激活命令为 `.venv\Scripts\activate`。数据生成、服务与工具演示、unittest全部离线，无需API Key。Phase 4运行与真实验收需要配置、网络及API调用额度。
 
-本机已存在PyCharm项目虚拟环境，Phase 4依赖已安装，不需要重建环境。其他克隆环境请先安装requirements，复制.env.example为.env并自行填入配置。环境变量优先于.env。不要把密钥放入命令参数或提交到Git。
+本机已存在PyCharm项目虚拟环境，当前Phase不要求重建环境。其他克隆环境请先安装requirements，复制.env.example为.env并自行填入配置。环境变量优先于.env。不要把密钥放入命令参数或提交到Git。Offline Evaluation不调用外部模型；Live Evaluation会请求Qwen API，且只允许固定案例C06和C09。Live遇到API连接错误后停止，不自动重试。
 
 ```bash
 .venv/bin/python -m scripts.run_agent "SKU003现在有多少库存？" --show-tools
 .venv/bin/python -m scripts.run_agent "比较SKU002最近30天和之前30天的销售表现。" --show-tools
 .venv/bin/python -m scripts.run_analysis "分析SKU005最近30天的销售和评论变化，有什么值得关注的问题？" --show-tools
 .venv/bin/python -m scripts.run_agent "分析SKU003当前库存风险，并根据我们的库存管理规则给出建议。" --show-tools
+.venv/bin/python -m scripts.evaluate_agent --mode offline
+.venv/bin/python -m scripts.evaluate_agent --mode live
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python -m scripts.check_secrets
 ```
@@ -74,7 +80,7 @@ python -m scripts.validate_mock_data --data-dir work/sample
 
 ## 预期结果
 
-Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent和run_analysis实际调用模型，show-tools打印模型选中的工具及状态。全部离线测试显示 `Ran 107 tests`、`OK`；真实验收另行运行。
+Phase 1验证打印PASS；demo_services与demo_tools仍是离线演示。run_agent和run_analysis实际调用模型，show-tools打印模型选中的工具及状态。Phase 7当前全量离线测试显示 `Ran 123 tests`、`OK`。Offline Evaluation的自动结果只验证脚本化Fake响应、Agent协议和本地证据，不代表真实Qwen准确率；人工复核也只适用于固定Fake回答；Live结果只代表实际完成的固定样本。
 
 比较基准来自数据截止日而不是电脑当天日期。默认最近30天是2026-08-24至2026-09-22；之前30天是2026-07-25至2026-08-23，两个窗口均包含首尾日期，互不重叠。
 
@@ -119,4 +125,4 @@ AGENTS.md              后续阶段固定协作与提交规则
 
 ## Git 阶段提交
 
-Phase 1至Phase 5及项目级Skill已提交。Phase 6尚未提交。提交前先运行check_secrets并核对Git Status和Diff；只有用户明确确认后再提交，不要使用`git add -f`添加`.env`。Phase 6建议Commit Message：`feat: add local rag knowledge base`。
+Phase 1至Phase 6已完成。Phase 7尚未提交，需先人工复盘与验收；不要自动提交。提交前运行check_secrets并核对Git Status和Diff，确认`.env`仍被忽略且没有敏感信息。Phase 7建议Commit Message：`feat: add agent evaluation baseline`。

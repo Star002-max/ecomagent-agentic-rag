@@ -1,0 +1,2452 @@
+{
+  "mode": "offline",
+  "model_kind": "scripted_fake",
+  "started_at_utc": "2026-10-12T04:23:48.397604+00:00",
+  "data_as_of": "2026-09-22",
+  "embedding": "LocalHashEmbeddings",
+  "case_count": 13,
+  "completed_case_count": 13,
+  "cases": [
+    {
+      "id": "C01",
+      "title": "SKU001 product information",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "SKU001是桌面收纳盒，当前价格39.9元、评分4.5833。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "get_product_info",
+          "arguments": {
+            "sku": "SKU001"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "status": "ok",
+              "sku": "SKU001",
+              "message": "",
+              "product": {
+                "sku": "SKU001",
+                "product_name": "桌面收纳盒",
+                "category": "家居",
+                "price": 39.9,
+                "rating": 4.5833,
+                "review_count": 360
+              },
+              "snapshot_note": "商品表是当前快照；历史评分请查询评价明细。"
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_product_info"
+          ],
+          "actual": [
+            "get_product_info"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_product_info"
+          ],
+          "actual": [
+            "get_product_info"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 3,
+          "applicable": 3,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "get_product_info",
+              "path": "data.product.product_name",
+              "expected": "桌面收纳盒",
+              "observed": "桌面收纳盒",
+              "status": "passed"
+            },
+            {
+              "tool": "get_product_info",
+              "path": "data.product.price",
+              "expected": 39.9,
+              "observed": 39.9,
+              "status": "passed"
+            },
+            {
+              "tool": "get_product_info",
+              "path": "data.product.rating",
+              "expected": 4.5833,
+              "observed": 4.5833,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "商品名称、价格和评分与商品 Tool 返回一致。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C02",
+      "title": "SKU003 inventory single tool",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "SKU003当前库存50件，可售约0.65天。该天数按近30天历史日均销量静态估算，假设未来销量相同；不考虑在途补货或需求变化，因此不是需求预测。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "get_inventory_data",
+          "arguments": {
+            "sku": "SKU003"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "status": "ok",
+              "sku": "SKU003",
+              "message": "",
+              "start_date": "2026-08-24",
+              "end_date": "2026-09-22",
+              "current_inventory": 50,
+              "current_inventory_date": "2026-09-22",
+              "inventory_change": -2237,
+              "trend": "down",
+              "history": [
+                {
+                  "date": "2026-08-24",
+                  "sku": "SKU003",
+                  "inventory": 2287
+                },
+                {
+                  "date": "2026-08-25",
+                  "sku": "SKU003",
+                  "inventory": 2211
+                },
+                {
+                  "date": "2026-08-26",
+                  "sku": "SKU003",
+                  "inventory": 2139
+                },
+                {
+                  "date": "2026-08-27",
+                  "sku": "SKU003",
+                  "inventory": 2066
+                },
+                {
+                  "date": "2026-08-28",
+                  "sku": "SKU003",
+                  "inventory": 1995
+                },
+                {
+                  "date": "2026-08-29",
+                  "sku": "SKU003",
+                  "inventory": 1923
+                },
+                {
+                  "date": "2026-08-30",
+                  "sku": "SKU003",
+                  "inventory": 1848
+                },
+                {
+                  "date": "2026-08-31",
+                  "sku": "SKU003",
+                  "inventory": 1772
+                },
+                {
+                  "date": "2026-09-01",
+                  "sku": "SKU003",
+                  "inventory": 1697
+                },
+                {
+                  "date": "2026-09-02",
+                  "sku": "SKU003",
+                  "inventory": 1621
+                },
+                {
+                  "date": "2026-09-03",
+                  "sku": "SKU003",
+                  "inventory": 1544
+                },
+                {
+                  "date": "2026-09-04",
+                  "sku": "SKU003",
+                  "inventory": 1466
+                },
+                {
+                  "date": "2026-09-05",
+                  "sku": "SKU003",
+                  "inventory": 1387
+                },
+                {
+                  "date": "2026-09-06",
+                  "sku": "SKU003",
+                  "inventory": 1310
+                },
+                {
+                  "date": "2026-09-07",
+                  "sku": "SKU003",
+                  "inventory": 1233
+                },
+                {
+                  "date": "2026-09-08",
+                  "sku": "SKU003",
+                  "inventory": 1158
+                },
+                {
+                  "date": "2026-09-09",
+                  "sku": "SKU003",
+                  "inventory": 1077
+                },
+                {
+                  "date": "2026-09-10",
+                  "sku": "SKU003",
+                  "inventory": 1000
+                },
+                {
+                  "date": "2026-09-11",
+                  "sku": "SKU003",
+                  "inventory": 921
+                },
+                {
+                  "date": "2026-09-12",
+                  "sku": "SKU003",
+                  "inventory": 841
+                },
+                {
+                  "date": "2026-09-13",
+                  "sku": "SKU003",
+                  "inventory": 765
+                },
+                {
+                  "date": "2026-09-14",
+                  "sku": "SKU003",
+                  "inventory": 688
+                },
+                {
+                  "date": "2026-09-15",
+                  "sku": "SKU003",
+                  "inventory": 611
+                },
+                {
+                  "date": "2026-09-16",
+                  "sku": "SKU003",
+                  "inventory": 530
+                },
+                {
+                  "date": "2026-09-17",
+                  "sku": "SKU003",
+                  "inventory": 447
+                },
+                {
+                  "date": "2026-09-18",
+                  "sku": "SKU003",
+                  "inventory": 369
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU003",
+                  "inventory": 291
+                },
+                {
+                  "date": "2026-09-20",
+                  "sku": "SKU003",
+                  "inventory": 210
+                },
+                {
+                  "date": "2026-09-21",
+                  "sku": "SKU003",
+                  "inventory": 127
+                },
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU003",
+                  "inventory": 50
+                }
+              ],
+              "average_daily_units": 77.06666666666666,
+              "estimated_stock_days": 0.6487889273356402,
+              "coverage": {
+                "expected_days": 30,
+                "observed_days": 30,
+                "complete": true,
+                "missing_dates": []
+              },
+              "source": "inventory.csv",
+              "sales_coverage": {
+                "expected_days": 30,
+                "observed_days": 30,
+                "complete": true,
+                "missing_dates": []
+              },
+              "estimate_unavailable_reason": null,
+              "limitations": [
+                "trend只描述区间首尾库存净变化，不表示每天都同向变化。",
+                "可售天数假定未来销量与所选区间日均销量相同，未考虑在途补货或需求变化。"
+              ]
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_inventory_data"
+          ],
+          "actual": [
+            "get_inventory_data"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_inventory_data"
+          ],
+          "actual": [
+            "get_inventory_data"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 2,
+          "applicable": 2,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "get_inventory_data",
+              "path": "data.current_inventory",
+              "expected": 50,
+              "observed": 50,
+              "status": "passed"
+            },
+            {
+              "tool": "get_inventory_data",
+              "path": "data.estimated_stock_days",
+              "expected": 0.6487889273356402,
+              "observed": 0.6487889273356402,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "库存数量和可售天数与库存 Tool 返回一致。"
+          ],
+          "review_required": true
+        },
+        "evidence_limit_compliance": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "明确说明可售天数是基于历史销量的估算，不是需求预测。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C03",
+      "title": "SKU001 two-period sales comparison",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "{\"sku\":\"SKU001\",\"summary\":\"销量与Sessions同期下降，转化率基本稳定。\",\"findings\":[\"销量从1833降至1205件。\",\"Sessions从28021降至18226。\",\"转化率基本稳定。\"],\"risk_level\":\"unknown\",\"recommendations\":[\"继续监控流量和销售数据。\"],\"evidence_limits\":[\"同期变化不能证明外部原因。\"]}",
+      "structured_output": {
+        "sku": "SKU001",
+        "summary": "销量与Sessions同期下降，转化率基本稳定。",
+        "findings": [
+          "销量从1833降至1205件。",
+          "Sessions从28021降至18226。",
+          "转化率基本稳定。"
+        ],
+        "risk_level": "unknown",
+        "recommendations": [
+          "继续监控流量和销售数据。"
+        ],
+        "evidence_limits": [
+          "同期变化不能证明外部原因。"
+        ]
+      },
+      "tool_calls": [
+        {
+          "name": "compare_sales_periods",
+          "arguments": {
+            "sku": "SKU001",
+            "current_start": "2026-08-24",
+            "current_end": "2026-09-22",
+            "previous_start": "2026-07-25",
+            "previous_end": "2026-08-23"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "sku": "SKU001",
+              "current": {
+                "status": "ok",
+                "sku": "SKU001",
+                "message": "",
+                "start_date": "2026-08-24",
+                "end_date": "2026-09-22",
+                "metrics": {
+                  "orders": 1092,
+                  "units": 1205,
+                  "revenue": 48079.5,
+                  "sessions": 18226,
+                  "conversion_rate": 0.05991440798858773
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 36.4,
+                  "units": 40.166666666666664,
+                  "revenue": 1602.65,
+                  "sessions": 607.5333333333333
+                }
+              },
+              "previous": {
+                "status": "ok",
+                "sku": "SKU001",
+                "message": "",
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "orders": 1672,
+                  "units": 1833,
+                  "revenue": 73136.7,
+                  "sessions": 28021,
+                  "conversion_rate": 0.05966953356411263
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 55.733333333333334,
+                  "units": 61.1,
+                  "revenue": 2437.89,
+                  "sessions": 934.0333333333333
+                }
+              },
+              "changes": {
+                "orders": {
+                  "absolute_change": -580,
+                  "relative_change": -0.34688995215311,
+                  "relative_change_reason": null
+                },
+                "units": {
+                  "absolute_change": -628,
+                  "relative_change": -0.342607746863066,
+                  "relative_change_reason": null
+                },
+                "revenue": {
+                  "absolute_change": -25057.199999999997,
+                  "relative_change": -0.342607746863066,
+                  "relative_change_reason": null
+                },
+                "sessions": {
+                  "absolute_change": -9795,
+                  "relative_change": -0.34955925912708324,
+                  "relative_change_reason": null
+                },
+                "conversion_rate": {
+                  "absolute_change": 0.0002448744244751,
+                  "relative_change": 0.004103843449890417,
+                  "relative_change_reason": null
+                }
+              },
+              "warnings": [],
+              "status": "ok",
+              "conversion_rate_percentage_point_change": 0.02448744244751
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "compare_sales_periods"
+          ],
+          "actual": [
+            "compare_sales_periods"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "compare_sales_periods",
+            "get_product_info"
+          ],
+          "actual": [
+            "compare_sales_periods"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "structured_output_validity": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": []
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 4,
+          "applicable": 4,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.current.metrics.units",
+              "expected": 1205,
+              "observed": 1205,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.previous.metrics.units",
+              "expected": 1833,
+              "observed": 1833,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.current.metrics.sessions",
+              "expected": 18226,
+              "observed": 18226,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.conversion_rate_percentage_point_change",
+              "expected": 0.02448744244751,
+              "observed": 0.02448744244751,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "描述销量与 Sessions 同期下降、Conversion Rate 基本稳定。"
+          ],
+          "review_required": true
+        },
+        "evidence_limit_compliance": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "不把同期变化表述为已证明的外部原因或因果关系。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C04",
+      "title": "SKU002 two-period sales comparison",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "{\"sku\":\"SKU002\",\"summary\":\"访问量稳定而转化率下降。\",\"findings\":[\"Sessions从29038变为29018。\",\"Conversion Rate从6.50%降至3.91%。\"],\"risk_level\":\"unknown\",\"recommendations\":[\"补充页面和价格变化数据后继续分析。\"],\"evidence_limits\":[\"现有数据无法证明转化下降原因。\"]}",
+      "structured_output": {
+        "sku": "SKU002",
+        "summary": "访问量稳定而转化率下降。",
+        "findings": [
+          "Sessions从29038变为29018。",
+          "Conversion Rate从6.50%降至3.91%。"
+        ],
+        "risk_level": "unknown",
+        "recommendations": [
+          "补充页面和价格变化数据后继续分析。"
+        ],
+        "evidence_limits": [
+          "现有数据无法证明转化下降原因。"
+        ]
+      },
+      "tool_calls": [
+        {
+          "name": "compare_sales_periods",
+          "arguments": {
+            "sku": "SKU002",
+            "current_start": "2026-08-24",
+            "current_end": "2026-09-22",
+            "previous_start": "2026-07-25",
+            "previous_end": "2026-08-23"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "sku": "SKU002",
+              "current": {
+                "status": "ok",
+                "sku": "SKU002",
+                "message": "",
+                "start_date": "2026-08-24",
+                "end_date": "2026-09-22",
+                "metrics": {
+                  "orders": 1134,
+                  "units": 1245,
+                  "revenue": 87025.5,
+                  "sessions": 29018,
+                  "conversion_rate": 0.039079192225515196
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 37.8,
+                  "units": 41.5,
+                  "revenue": 2900.85,
+                  "sessions": 967.2666666666667
+                }
+              },
+              "previous": {
+                "status": "ok",
+                "sku": "SKU002",
+                "message": "",
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "orders": 1888,
+                  "units": 2081,
+                  "revenue": 145461.9,
+                  "sessions": 29038,
+                  "conversion_rate": 0.06501825194572629
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 62.93333333333333,
+                  "units": 69.36666666666666,
+                  "revenue": 4848.73,
+                  "sessions": 967.9333333333333
+                }
+              },
+              "changes": {
+                "orders": {
+                  "absolute_change": -754,
+                  "relative_change": -0.399364406779661,
+                  "relative_change_reason": null
+                },
+                "units": {
+                  "absolute_change": -836,
+                  "relative_change": -0.40172993753003367,
+                  "relative_change_reason": null
+                },
+                "revenue": {
+                  "absolute_change": -58436.399999999994,
+                  "relative_change": -0.4017299375300336,
+                  "relative_change_reason": null
+                },
+                "sessions": {
+                  "absolute_change": -20,
+                  "relative_change": -0.0006887526689165921,
+                  "relative_change_reason": null
+                },
+                "conversion_rate": {
+                  "absolute_change": -0.025939059720211093,
+                  "relative_change": -0.39895043228574667,
+                  "relative_change_reason": null
+                }
+              },
+              "warnings": [],
+              "status": "ok",
+              "conversion_rate_percentage_point_change": -2.5939059720211093
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "compare_sales_periods"
+          ],
+          "actual": [
+            "compare_sales_periods"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "compare_sales_periods",
+            "get_product_info"
+          ],
+          "actual": [
+            "compare_sales_periods"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "structured_output_validity": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": []
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 4,
+          "applicable": 4,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.current.metrics.sessions",
+              "expected": 29018,
+              "observed": 29018,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.previous.metrics.sessions",
+              "expected": 29038,
+              "observed": 29038,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.current.metrics.conversion_rate",
+              "expected": 0.039079192225515196,
+              "observed": 0.039079192225515196,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.previous.metrics.conversion_rate",
+              "expected": 0.06501825194572629,
+              "observed": 0.06501825194572629,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "指出 Sessions 基本稳定而 Conversion Rate 明显下降。"
+          ],
+          "review_required": true
+        },
+        "evidence_limit_compliance": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "不虚构转化下降原因，说明现有数据不能证明原因。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C05",
+      "title": "SKU005 review change",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "SKU005最近30天均分2.1，低分评价47条，较前期下降约2.58分。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "get_review_data",
+          "arguments": {
+            "sku": "SKU005"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "status": "ok",
+              "sku": "SKU005",
+              "message": "",
+              "start_date": "2026-08-24",
+              "end_date": "2026-09-22",
+              "metrics": {
+                "review_count": 60,
+                "average_rating": 2.1,
+                "low_rating_count": 47
+              },
+              "previous": {
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "review_count": 60,
+                  "average_rating": 4.683333333333334,
+                  "low_rating_count": 0
+                },
+                "within_observed_source_span": true
+              },
+              "rating_change": -2.5833333333333335,
+              "low_rating_reviews": [
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-20",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU005",
+                  "rating": 1,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                }
+              ],
+              "source": "reviews.csv",
+              "observed_source_start": "2026-03-27",
+              "observed_source_end": "2026-09-22",
+              "within_observed_source_span": true,
+              "comparison_status": "ok",
+              "low_rating_reviews_truncated": true,
+              "limitations": [
+                "按已有评价记录统计；没有评价不等于零分，也不能据此证明采集完整。"
+              ]
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_review_data"
+          ],
+          "actual": [
+            "get_review_data"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_review_data"
+          ],
+          "actual": [
+            "get_review_data"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 3,
+          "applicable": 3,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "get_review_data",
+              "path": "data.metrics.average_rating",
+              "expected": 2.1,
+              "observed": 2.1,
+              "status": "passed"
+            },
+            {
+              "tool": "get_review_data",
+              "path": "data.metrics.low_rating_count",
+              "expected": 47,
+              "observed": 47,
+              "status": "passed"
+            },
+            {
+              "tool": "get_review_data",
+              "path": "data.rating_change",
+              "expected": -2.5833333333333335,
+              "observed": -2.5833333333333335,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "评分、低分评价数和评分变化与评价 Tool 返回一致。"
+          ],
+          "review_required": true
+        },
+        "evidence_limit_compliance": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "不把当前评价记录推断为完整的评价总体。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C06",
+      "title": "SKU005 sales and review analysis",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "{\"sku\":\"SKU005\",\"summary\":\"销量与评价同期恶化，Sessions基本持平。\",\"findings\":[\"销量从2130降至1276件。\",\"Sessions变化约0.06%。\",\"均分为2.1，低分评价47条。\"],\"risk_level\":\"unknown\",\"recommendations\":[\"核对低分评价并补充调查数据。\"],\"evidence_limits\":[\"同期变化不能证明销量下降由评价造成。\"]}",
+      "structured_output": {
+        "sku": "SKU005",
+        "summary": "销量与评价同期恶化，Sessions基本持平。",
+        "findings": [
+          "销量从2130降至1276件。",
+          "Sessions变化约0.06%。",
+          "均分为2.1，低分评价47条。"
+        ],
+        "risk_level": "unknown",
+        "recommendations": [
+          "核对低分评价并补充调查数据。"
+        ],
+        "evidence_limits": [
+          "同期变化不能证明销量下降由评价造成。"
+        ]
+      },
+      "tool_calls": [
+        {
+          "name": "compare_sales_periods",
+          "arguments": {
+            "sku": "SKU005",
+            "current_start": "2026-08-24",
+            "current_end": "2026-09-22",
+            "previous_start": "2026-07-25",
+            "previous_end": "2026-08-23"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "sku": "SKU005",
+              "current": {
+                "status": "ok",
+                "sku": "SKU005",
+                "message": "",
+                "start_date": "2026-08-24",
+                "end_date": "2026-09-22",
+                "metrics": {
+                  "orders": 1164,
+                  "units": 1276,
+                  "revenue": 45808.4,
+                  "sessions": 32276,
+                  "conversion_rate": 0.03606394844466477
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 38.8,
+                  "units": 42.53333333333333,
+                  "revenue": 1526.9466666666667,
+                  "sessions": 1075.8666666666666
+                }
+              },
+              "previous": {
+                "status": "ok",
+                "sku": "SKU005",
+                "message": "",
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "orders": 1934,
+                  "units": 2130,
+                  "revenue": 76467.0,
+                  "sessions": 32258,
+                  "conversion_rate": 0.05995411990823982
+                },
+                "coverage": {
+                  "expected_days": 30,
+                  "observed_days": 30,
+                  "complete": true,
+                  "missing_dates": []
+                },
+                "source": "sales.csv",
+                "daily_averages": {
+                  "orders": 64.46666666666667,
+                  "units": 71.0,
+                  "revenue": 2548.9,
+                  "sessions": 1075.2666666666667
+                }
+              },
+              "changes": {
+                "orders": {
+                  "absolute_change": -770,
+                  "relative_change": -0.3981385729058945,
+                  "relative_change_reason": null
+                },
+                "units": {
+                  "absolute_change": -854,
+                  "relative_change": -0.40093896713615024,
+                  "relative_change_reason": null
+                },
+                "revenue": {
+                  "absolute_change": -30658.6,
+                  "relative_change": -0.40093896713615024,
+                  "relative_change_reason": null
+                },
+                "sessions": {
+                  "absolute_change": 18,
+                  "relative_change": 0.000558001116002232,
+                  "relative_change_reason": null
+                },
+                "conversion_rate": {
+                  "absolute_change": -0.023890171463575048,
+                  "relative_change": -0.3984742249596711,
+                  "relative_change_reason": null
+                }
+              },
+              "warnings": [],
+              "status": "ok",
+              "conversion_rate_percentage_point_change": -2.3890171463575047
+            },
+            "truncated": false
+          }
+        },
+        {
+          "name": "get_review_data",
+          "arguments": {
+            "sku": "SKU005"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "status": "ok",
+              "sku": "SKU005",
+              "message": "",
+              "start_date": "2026-08-24",
+              "end_date": "2026-09-22",
+              "metrics": {
+                "review_count": 60,
+                "average_rating": 2.1,
+                "low_rating_count": 47
+              },
+              "previous": {
+                "start_date": "2026-07-25",
+                "end_date": "2026-08-23",
+                "metrics": {
+                  "review_count": 60,
+                  "average_rating": 4.683333333333334,
+                  "low_rating_count": 0
+                },
+                "within_observed_source_span": true
+              },
+              "rating_change": -2.5833333333333335,
+              "low_rating_reviews": [
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-20",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU005",
+                  "rating": 2,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU005",
+                  "rating": 1,
+                  "review_text": "使用后发现做工问题，希望改善质量。"
+                }
+              ],
+              "source": "reviews.csv",
+              "observed_source_start": "2026-03-27",
+              "observed_source_end": "2026-09-22",
+              "within_observed_source_span": true,
+              "comparison_status": "ok",
+              "low_rating_reviews_truncated": true,
+              "limitations": [
+                "按已有评价记录统计；没有评价不等于零分，也不能据此证明采集完整。"
+              ]
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 2,
+          "applicable": 2,
+          "details": [],
+          "expected": [
+            "compare_sales_periods",
+            "get_review_data"
+          ],
+          "actual": [
+            "compare_sales_periods",
+            "get_review_data"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 2,
+          "applicable": 2,
+          "details": [],
+          "expected": [
+            "compare_sales_periods",
+            "get_product_info",
+            "get_review_data"
+          ],
+          "actual": [
+            "compare_sales_periods",
+            "get_review_data"
+          ],
+          "actual_call_count": 2,
+          "redundant_call_count": 0
+        },
+        "structured_output_validity": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": []
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 5,
+          "applicable": 5,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.current.metrics.units",
+              "expected": 1276,
+              "observed": 1276,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.changes.sessions.relative_change",
+              "expected": 0.000558001116002232,
+              "observed": 0.000558001116002232,
+              "status": "passed"
+            },
+            {
+              "tool": "get_review_data",
+              "path": "data.metrics.average_rating",
+              "expected": 2.1,
+              "observed": 2.1,
+              "status": "passed"
+            },
+            {
+              "tool": "get_review_data",
+              "path": "data.metrics.low_rating_count",
+              "expected": 47,
+              "observed": 47,
+              "status": "passed"
+            },
+            {
+              "tool": "compare_sales_periods",
+              "path": "data.previous.metrics.units",
+              "expected": 2130,
+              "observed": 2130,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "销售和评价事实、以及建议均能对应到相应 Tool 证据。"
+          ],
+          "review_required": true
+        },
+        "evidence_limit_compliance": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "将销售与评价同期变化和已证明因果区分开。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C07",
+      "title": "Direct inventory rule retrieval",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "检索到的规则是：可售天数小于7天为高风险，7至14天为中风险，大于14天为低风险；库存为0时为缺货高风险。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "search_operation_knowledge",
+          "arguments": {
+            "query": "可售天数库存风险分级",
+            "k": 3
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "query": "可售天数库存风险分级",
+              "matches": [
+                {
+                  "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+                  "source": "inventory_management.md",
+                  "title": "库存管理规则",
+                  "section": "风险分级",
+                  "chunk_id": 0
+                },
+                {
+                  "content": "## 使用限制  \n可售天数是基于历史日均销量的静态估算，不包含未来促销、需求预测、供应商交期或已经下单但尚未入库的数量。数据不完整或无法计算日均销量时，不应强行给出风险等级。",
+                  "source": "inventory_management.md",
+                  "title": "库存管理规则",
+                  "section": "使用限制",
+                  "chunk_id": 2
+                },
+                {
+                  "content": "## 综合判断  \n先描述销量、订单、访问量和转化率的变化，再检查库存可售天数与评价变化。不同指标同期变化只能视为相关线索，不能直接认定因果关系。",
+                  "source": "product_analysis_sop.md",
+                  "title": "综合商品分析 SOP",
+                  "section": "综合判断",
+                  "chunk_id": 4
+                }
+              ]
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "search_operation_knowledge"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "search_operation_knowledge"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "rag_source_hit_rate": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "inventory_management.md"
+          ],
+          "actual": [
+            "inventory_management.md",
+            "product_analysis_sop.md"
+          ],
+          "top_k": 3
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "库存风险阈值的概括与实际检索片段一致。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C08",
+      "title": "Paraphrased inventory rule retrieval",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "本次检索返回的片段没有提供针对该情形的具体处理建议；仅凭当前证据，无法判断应该优先采取哪项措施。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "search_operation_knowledge",
+          "arguments": {
+            "query": "余量按最近销售速度只能卖几天应该优先处理什么",
+            "k": 3
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "query": "余量按最近销售速度只能卖几天应该优先处理什么",
+              "matches": [
+                {
+                  "content": "## 综合判断  \n先描述销量、订单、访问量和转化率的变化，再检查库存可售天数与评价变化。不同指标同期变化只能视为相关线索，不能直接认定因果关系。",
+                  "source": "product_analysis_sop.md",
+                  "title": "综合商品分析 SOP",
+                  "section": "综合判断",
+                  "chunk_id": 4
+                },
+                {
+                  "content": "## 指标解释  \n访问量与销量同步下降而转化率稳定，说明下降主要体现在访问和成交规模，但现有数据不能证明访问量变化的外部原因。访问量稳定而转化率下降，说明表现变化集中在转化环节，仍需更多数据调查原因。",
+                  "source": "sales_analysis_rules.md",
+                  "title": "销售分析规则",
+                  "section": "指标解释",
+                  "chunk_id": 10
+                },
+                {
+                  "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+                  "source": "inventory_management.md",
+                  "title": "库存管理规则",
+                  "section": "风险分级",
+                  "chunk_id": 0
+                }
+              ]
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "search_operation_knowledge"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "search_operation_knowledge"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "rag_source_hit_rate": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "inventory_management.md"
+          ],
+          "actual": [
+            "inventory_management.md",
+            "product_analysis_sop.md",
+            "sales_analysis_rules.md"
+          ],
+          "top_k": 3
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "语义改写问题检索到库存规则，建议忠实于实际检索片段。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C09",
+      "title": "SKU003 inventory plus operation knowledge",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "SKU003当前库存50件，可售约0.65天；按检索规则，小于7天属高风险。规则建议立即核对在途补货和预计到货时间，并结合近期销量安排补货。可售天数是按近30天历史日均销量作出的静态估算，假设未来销量相同，不考虑在途补货或需求变化。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "get_inventory_data",
+          "arguments": {
+            "sku": "SKU003"
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "status": "ok",
+              "sku": "SKU003",
+              "message": "",
+              "start_date": "2026-08-24",
+              "end_date": "2026-09-22",
+              "current_inventory": 50,
+              "current_inventory_date": "2026-09-22",
+              "inventory_change": -2237,
+              "trend": "down",
+              "history": [
+                {
+                  "date": "2026-08-24",
+                  "sku": "SKU003",
+                  "inventory": 2287
+                },
+                {
+                  "date": "2026-08-25",
+                  "sku": "SKU003",
+                  "inventory": 2211
+                },
+                {
+                  "date": "2026-08-26",
+                  "sku": "SKU003",
+                  "inventory": 2139
+                },
+                {
+                  "date": "2026-08-27",
+                  "sku": "SKU003",
+                  "inventory": 2066
+                },
+                {
+                  "date": "2026-08-28",
+                  "sku": "SKU003",
+                  "inventory": 1995
+                },
+                {
+                  "date": "2026-08-29",
+                  "sku": "SKU003",
+                  "inventory": 1923
+                },
+                {
+                  "date": "2026-08-30",
+                  "sku": "SKU003",
+                  "inventory": 1848
+                },
+                {
+                  "date": "2026-08-31",
+                  "sku": "SKU003",
+                  "inventory": 1772
+                },
+                {
+                  "date": "2026-09-01",
+                  "sku": "SKU003",
+                  "inventory": 1697
+                },
+                {
+                  "date": "2026-09-02",
+                  "sku": "SKU003",
+                  "inventory": 1621
+                },
+                {
+                  "date": "2026-09-03",
+                  "sku": "SKU003",
+                  "inventory": 1544
+                },
+                {
+                  "date": "2026-09-04",
+                  "sku": "SKU003",
+                  "inventory": 1466
+                },
+                {
+                  "date": "2026-09-05",
+                  "sku": "SKU003",
+                  "inventory": 1387
+                },
+                {
+                  "date": "2026-09-06",
+                  "sku": "SKU003",
+                  "inventory": 1310
+                },
+                {
+                  "date": "2026-09-07",
+                  "sku": "SKU003",
+                  "inventory": 1233
+                },
+                {
+                  "date": "2026-09-08",
+                  "sku": "SKU003",
+                  "inventory": 1158
+                },
+                {
+                  "date": "2026-09-09",
+                  "sku": "SKU003",
+                  "inventory": 1077
+                },
+                {
+                  "date": "2026-09-10",
+                  "sku": "SKU003",
+                  "inventory": 1000
+                },
+                {
+                  "date": "2026-09-11",
+                  "sku": "SKU003",
+                  "inventory": 921
+                },
+                {
+                  "date": "2026-09-12",
+                  "sku": "SKU003",
+                  "inventory": 841
+                },
+                {
+                  "date": "2026-09-13",
+                  "sku": "SKU003",
+                  "inventory": 765
+                },
+                {
+                  "date": "2026-09-14",
+                  "sku": "SKU003",
+                  "inventory": 688
+                },
+                {
+                  "date": "2026-09-15",
+                  "sku": "SKU003",
+                  "inventory": 611
+                },
+                {
+                  "date": "2026-09-16",
+                  "sku": "SKU003",
+                  "inventory": 530
+                },
+                {
+                  "date": "2026-09-17",
+                  "sku": "SKU003",
+                  "inventory": 447
+                },
+                {
+                  "date": "2026-09-18",
+                  "sku": "SKU003",
+                  "inventory": 369
+                },
+                {
+                  "date": "2026-09-19",
+                  "sku": "SKU003",
+                  "inventory": 291
+                },
+                {
+                  "date": "2026-09-20",
+                  "sku": "SKU003",
+                  "inventory": 210
+                },
+                {
+                  "date": "2026-09-21",
+                  "sku": "SKU003",
+                  "inventory": 127
+                },
+                {
+                  "date": "2026-09-22",
+                  "sku": "SKU003",
+                  "inventory": 50
+                }
+              ],
+              "average_daily_units": 77.06666666666666,
+              "estimated_stock_days": 0.6487889273356402,
+              "coverage": {
+                "expected_days": 30,
+                "observed_days": 30,
+                "complete": true,
+                "missing_dates": []
+              },
+              "source": "inventory.csv",
+              "sales_coverage": {
+                "expected_days": 30,
+                "observed_days": 30,
+                "complete": true,
+                "missing_dates": []
+              },
+              "estimate_unavailable_reason": null,
+              "limitations": [
+                "trend只描述区间首尾库存净变化，不表示每天都同向变化。",
+                "可售天数假定未来销量与所选区间日均销量相同，未考虑在途补货或需求变化。"
+              ]
+            },
+            "truncated": false
+          }
+        },
+        {
+          "name": "search_operation_knowledge",
+          "arguments": {
+            "query": "库存风险分级和补货建议",
+            "k": 3
+          },
+          "execution_status": "success",
+          "result_status": "ok",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "query": "库存风险分级和补货建议",
+              "matches": [
+                {
+                  "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+                  "source": "inventory_management.md",
+                  "title": "库存管理规则",
+                  "section": "风险分级",
+                  "chunk_id": 0
+                },
+                {
+                  "content": "## 处理建议  \n高风险时应立即核对在途补货和预计到货时间，并结合近期销量安排补货。中风险时应进入重点监控，复核补货周期和安全库存。低风险时按常规频率监控。",
+                  "source": "inventory_management.md",
+                  "title": "库存管理规则",
+                  "section": "处理建议",
+                  "chunk_id": 1
+                },
+                {
+                  "content": "## 输出要求  \n结论应分成已确认事实、风险判断、行动建议和证据限制。缺少价格变动、流量来源、补货计划或商品批次等信息时，应明确说明还需要补充数据。",
+                  "source": "product_analysis_sop.md",
+                  "title": "综合商品分析 SOP",
+                  "section": "输出要求",
+                  "chunk_id": 5
+                }
+              ]
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 2,
+          "applicable": 2,
+          "details": [],
+          "expected": [
+            "get_inventory_data",
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "get_inventory_data",
+            "search_operation_knowledge"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 2,
+          "applicable": 2,
+          "details": [],
+          "expected": [
+            "get_inventory_data",
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "get_inventory_data",
+            "search_operation_knowledge"
+          ],
+          "actual_call_count": 2,
+          "redundant_call_count": 0
+        },
+        "rag_source_hit_rate": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "inventory_management.md"
+          ],
+          "actual": [
+            "inventory_management.md",
+            "product_analysis_sop.md"
+          ],
+          "top_k": 3
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 2,
+          "applicable": 2,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "get_inventory_data",
+              "path": "data.current_inventory",
+              "expected": 50,
+              "observed": 50,
+              "status": "passed"
+            },
+            {
+              "tool": "get_inventory_data",
+              "path": "data.estimated_stock_days",
+              "expected": 0.6487889273356402,
+              "observed": 0.6487889273356402,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "库存数字来自业务 Tool，风险阈值及建议来自检索片段。"
+          ],
+          "review_required": true
+        },
+        "evidence_limit_compliance": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "说明可售天数是历史销量估算，且不含在途补货。"
+          ],
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "C10",
+      "title": "Unknown SKU",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "{\"sku\":\"SKU999\",\"summary\":\"当前数据源未找到SKU999，无法分析表现。\",\"findings\":[\"商品查询返回not_found。\"],\"risk_level\":\"unknown\",\"recommendations\":[\"核对SKU编号后重试。\"],\"evidence_limits\":[\"没有商品数据，无法评估风险。\"]}",
+      "structured_output": {
+        "sku": "SKU999",
+        "summary": "当前数据源未找到SKU999，无法分析表现。",
+        "findings": [
+          "商品查询返回not_found。"
+        ],
+        "risk_level": "unknown",
+        "recommendations": [
+          "核对SKU编号后重试。"
+        ],
+        "evidence_limits": [
+          "没有商品数据，无法评估风险。"
+        ]
+      },
+      "tool_calls": [
+        {
+          "name": "get_product_info",
+          "arguments": {
+            "sku": "SKU999"
+          },
+          "execution_status": "success",
+          "result_status": "not_found",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "status": "not_found",
+              "sku": "SKU999",
+              "message": "当前数据源中没有找到该商品。",
+              "product": null
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_product_info"
+          ],
+          "actual": [
+            "get_product_info"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_product_info"
+          ],
+          "actual": [
+            "get_product_info"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "structured_output_validity": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": []
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "get_product_info",
+              "path": "status",
+              "expected": "not_found",
+              "observed": "not_found",
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "明确 SKU 不存在、risk_level 为 unknown，且不编造商品指标。"
+          ],
+          "review_required": true
+        },
+        "failure_handling": {
+          "status": "pending_manual_review",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "automated_status": "passed",
+          "manual_checks": [
+            "明确 SKU 不存在、risk_level 为 unknown，且不编造商品指标。",
+            "明确无商品数据，因此无法对商品表现作结论。"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C11",
+      "title": "Partial date coverage",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "该区间只覆盖1天，第二天没有记录，不能视为完整两天数据。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "get_sales_data",
+          "arguments": {
+            "sku": "SKU001",
+            "start_date": "2026-09-22",
+            "end_date": "2026-09-23"
+          },
+          "execution_status": "success",
+          "result_status": "partial",
+          "error_code": null,
+          "error": null,
+          "evidence": {
+            "data": {
+              "status": "partial",
+              "sku": "SKU001",
+              "message": "日期不完整；指标仅汇总已有记录，缺失日未补零。",
+              "start_date": "2026-09-22",
+              "end_date": "2026-09-23",
+              "metrics": {
+                "orders": 37,
+                "units": 41,
+                "revenue": 1635.9,
+                "sessions": 637,
+                "conversion_rate": 0.058084772370486655
+              },
+              "coverage": {
+                "expected_days": 2,
+                "observed_days": 1,
+                "complete": false,
+                "missing_dates": [
+                  "2026-09-23"
+                ]
+              },
+              "source": "sales.csv"
+            },
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_sales_data"
+          ],
+          "actual": [
+            "get_sales_data"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_sales_data"
+          ],
+          "actual": [
+            "get_sales_data"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "tool_evidence_check": {
+          "status": "passed",
+          "passed": 3,
+          "applicable": 3,
+          "details": [],
+          "evidence": [
+            {
+              "tool": "get_sales_data",
+              "path": "status",
+              "expected": "partial",
+              "observed": "partial",
+              "status": "passed"
+            },
+            {
+              "tool": "get_sales_data",
+              "path": "data.coverage.observed_days",
+              "expected": 1,
+              "observed": 1,
+              "status": "passed"
+            },
+            {
+              "tool": "get_sales_data",
+              "path": "data.coverage.expected_days",
+              "expected": 2,
+              "observed": 2,
+              "status": "passed"
+            }
+          ]
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "说明数据覆盖为 1/2 天，与 Tool 返回一致。"
+          ],
+          "review_required": true
+        },
+        "failure_handling": {
+          "status": "pending_manual_review",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "automated_status": "passed",
+          "manual_checks": [
+            "说明数据覆盖为 1/2 天，与 Tool 返回一致。",
+            "不将缺失日期补零，也不把部分覆盖描述为完整周期。"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C12",
+      "title": "Business tool argument failure",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "库存查询参数不完整，未取得SKU库存数据。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "get_inventory_data",
+          "arguments": {},
+          "execution_status": "error",
+          "result_status": "error",
+          "error_code": "invalid_arguments",
+          "error": {
+            "code": "invalid_arguments",
+            "message": "参数不符合工具schema，请按字段说明修正。",
+            "details": [
+              {
+                "field": "sku",
+                "type": "missing",
+                "message": "Field required"
+              }
+            ]
+          },
+          "evidence": {
+            "data": null,
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_inventory_data"
+          ],
+          "actual": [
+            "get_inventory_data"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "get_inventory_data"
+          ],
+          "actual": [
+            "get_inventory_data"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "说明库存查询参数错误，不能描述成成功查询，也不编造库存数量。"
+          ],
+          "review_required": true
+        },
+        "failure_handling": {
+          "status": "pending_manual_review",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "automated_status": "passed",
+          "manual_checks": [
+            "说明库存查询参数错误，不能描述成成功查询，也不编造库存数量。",
+            "参数错误导致本次没有可用库存数据，不能断言库存数量。"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C13",
+      "title": "RAG retrieval failure",
+      "status": "completed",
+      "error": null,
+      "model_calls": 2,
+      "model_call_count_kind": "completed_agent_calls",
+      "answer": "本次知识检索失败，无法引用内部库存规则。",
+      "structured_output": null,
+      "tool_calls": [
+        {
+          "name": "search_operation_knowledge",
+          "arguments": {
+            "query": "库存风险和补货",
+            "k": 3
+          },
+          "execution_status": "error",
+          "result_status": "error",
+          "error_code": "retrieval_error",
+          "error": {
+            "code": "retrieval_error",
+            "message": "运营知识检索暂时不可用，请基于已有证据回答并说明限制。",
+            "details": []
+          },
+          "evidence": {
+            "data": null,
+            "truncated": false
+          }
+        }
+      ],
+      "metrics": {
+        "required_tool_recall": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "search_operation_knowledge"
+          ]
+        },
+        "tool_selection_precision": {
+          "status": "passed",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "expected": [
+            "search_operation_knowledge"
+          ],
+          "actual": [
+            "search_operation_knowledge"
+          ],
+          "actual_call_count": 1,
+          "redundant_call_count": 0
+        },
+        "answer_fact_review": {
+          "status": "pending_manual_review",
+          "passed": 0,
+          "applicable": 1,
+          "details": [
+            "说明知识检索失败，且不声称成功检索了知识片段。"
+          ],
+          "review_required": true
+        },
+        "failure_handling": {
+          "status": "pending_manual_review",
+          "passed": 1,
+          "applicable": 1,
+          "details": [],
+          "automated_status": "passed",
+          "manual_checks": [
+            "说明知识检索失败，且不声称成功检索了知识片段。",
+            "没有检索证据时，不把建议表述为内部规则支持的结论。"
+          ]
+        }
+      }
+    }
+  ],
+  "metrics": {
+    "answer_fact_review": {
+      "passing_cases": 0,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 13,
+      "pending_review_items": 13,
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "structured_output_validity": {
+      "passing_cases": 4,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 0,
+      "pending_review_items": 0,
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "required_tool_recall": {
+      "passing_cases": 13,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 0,
+      "pending_review_items": 0,
+      "numerator": 15,
+      "denominator": 15,
+      "rate": 1.0
+    },
+    "rag_source_hit_rate": {
+      "passing_cases": 3,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 0,
+      "pending_review_items": 0,
+      "numerator": 3,
+      "denominator": 3,
+      "rate": 1.0
+    },
+    "evidence_limit_compliance": {
+      "passing_cases": 0,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 6,
+      "pending_review_items": 6,
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    },
+    "failure_handling": {
+      "passing_cases": 0,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 4,
+      "pending_review_items": 8,
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "tool_selection_precision": {
+      "passing_cases": 13,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 0,
+      "pending_review_items": 0,
+      "numerator": 15,
+      "denominator": 15,
+      "rate": 1.0
+    },
+    "tool_evidence_check": {
+      "passing_cases": 9,
+      "failing_cases": 0,
+      "pending_manual_review_cases": 0,
+      "pending_review_items": 0,
+      "numerator": 27,
+      "denominator": 27,
+      "rate": 1.0
+    }
+  },
+  "rag_top3_baseline": [
+    {
+      "case_id": "C07",
+      "query": "可售天数库存风险分级",
+      "top_k": 3,
+      "expected_sources": [
+        "inventory_management.md"
+      ],
+      "source_hit": true,
+      "status": "completed",
+      "results": [
+        {
+          "rank": 1,
+          "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+          "source": "inventory_management.md",
+          "title": "库存管理规则",
+          "section": "风险分级",
+          "chunk_id": 0,
+          "is_expected_source": true
+        },
+        {
+          "rank": 2,
+          "content": "## 使用限制  \n可售天数是基于历史日均销量的静态估算，不包含未来促销、需求预测、供应商交期或已经下单但尚未入库的数量。数据不完整或无法计算日均销量时，不应强行给出风险等级。",
+          "source": "inventory_management.md",
+          "title": "库存管理规则",
+          "section": "使用限制",
+          "chunk_id": 2,
+          "is_expected_source": true
+        },
+        {
+          "rank": 3,
+          "content": "## 综合判断  \n先描述销量、订单、访问量和转化率的变化，再检查库存可售天数与评价变化。不同指标同期变化只能视为相关线索，不能直接认定因果关系。",
+          "source": "product_analysis_sop.md",
+          "title": "综合商品分析 SOP",
+          "section": "综合判断",
+          "chunk_id": 4,
+          "is_expected_source": false
+        }
+      ]
+    },
+    {
+      "case_id": "C08",
+      "query": "余量按最近销售速度只能卖几天应该优先处理什么",
+      "top_k": 3,
+      "expected_sources": [
+        "inventory_management.md"
+      ],
+      "source_hit": true,
+      "status": "completed",
+      "results": [
+        {
+          "rank": 1,
+          "content": "## 综合判断  \n先描述销量、订单、访问量和转化率的变化，再检查库存可售天数与评价变化。不同指标同期变化只能视为相关线索，不能直接认定因果关系。",
+          "source": "product_analysis_sop.md",
+          "title": "综合商品分析 SOP",
+          "section": "综合判断",
+          "chunk_id": 4,
+          "is_expected_source": false
+        },
+        {
+          "rank": 2,
+          "content": "## 指标解释  \n访问量与销量同步下降而转化率稳定，说明下降主要体现在访问和成交规模，但现有数据不能证明访问量变化的外部原因。访问量稳定而转化率下降，说明表现变化集中在转化环节，仍需更多数据调查原因。",
+          "source": "sales_analysis_rules.md",
+          "title": "销售分析规则",
+          "section": "指标解释",
+          "chunk_id": 10,
+          "is_expected_source": false
+        },
+        {
+          "rank": 3,
+          "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+          "source": "inventory_management.md",
+          "title": "库存管理规则",
+          "section": "风险分级",
+          "chunk_id": 0,
+          "is_expected_source": true
+        }
+      ]
+    },
+    {
+      "case_id": "C09",
+      "query": "库存风险分级和补货建议",
+      "top_k": 3,
+      "expected_sources": [
+        "inventory_management.md"
+      ],
+      "source_hit": true,
+      "status": "completed",
+      "results": [
+        {
+          "rank": 1,
+          "content": "# 库存管理规则  \n## 风险分级  \n可售天数使用当前库存除以观察期日均销量估算。可售天数小于 7 天为高风险，7 至 14 天为中风险，大于 14 天为低风险。当前库存为 0 时视为缺货高风险。",
+          "source": "inventory_management.md",
+          "title": "库存管理规则",
+          "section": "风险分级",
+          "chunk_id": 0,
+          "is_expected_source": true
+        },
+        {
+          "rank": 2,
+          "content": "## 处理建议  \n高风险时应立即核对在途补货和预计到货时间，并结合近期销量安排补货。中风险时应进入重点监控，复核补货周期和安全库存。低风险时按常规频率监控。",
+          "source": "inventory_management.md",
+          "title": "库存管理规则",
+          "section": "处理建议",
+          "chunk_id": 1,
+          "is_expected_source": true
+        },
+        {
+          "rank": 3,
+          "content": "## 输出要求  \n结论应分成已确认事实、风险判断、行动建议和证据限制。缺少价格变动、流量来源、补货计划或商品批次等信息时，应明确说明还需要补充数据。",
+          "source": "product_analysis_sop.md",
+          "title": "综合商品分析 SOP",
+          "section": "输出要求",
+          "chunk_id": 5,
+          "is_expected_source": false
+        }
+      ]
+    }
+  ],
+  "interpretation_limit": "Scripted Fake Model案例验证Agent协议、评估器和本地组件；不代表真实Qwen的工具选择或回答准确率。",
+  "resources": {
+    "wall_seconds": 0.1191,
+    "process_cpu_seconds": 0.1191,
+    "process_peak_rss_bytes": 182550528,
+    "rss_scope": "当前Python进程生命周期峰值，包含解释器、依赖导入和本次评估，不是Phase 7增量内存。"
+  },
+  "dataset_version": "1.0",
+  "git_revision": "bb9a8464de0e60f1cda4260aac3f28a882841fcf",
+  "case_status_counts": {
+    "completed": 13,
+    "error": 0,
+    "limit_reached": 0
+  }
+}
