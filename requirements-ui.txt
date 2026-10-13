@@ -1,0 +1,2 @@
+# Optional local Web UI dependency; core CLI requirements remain unchanged.
+streamlit==1.65.0

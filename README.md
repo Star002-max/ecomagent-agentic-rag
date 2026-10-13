@@ -9,6 +9,8 @@ V1业务范围只有商品、销售、库存、评价。模型可从5个业务�
 - [系统架构图与数据流](docs/architecture.md)：Agent、Tool、Service、CSV、RAG、Embedding、Chroma 与 Memory 的职责和调用关系。
 - [完全离线 Agent Demo](docs/offline_demo.md)：Fake Model + 真实本地 CSV Tools/LocalHash RAG，展示连续追问和工具往返，不需要 API Key。
 - [简历与面试准备](docs/resume_and_interview.md)：项目描述、1分钟介绍、常见架构追问与参考答题要点。
+- [Streamlit Web UI](streamlit_app.py)：真实 Qwen Agent 聊天、RAG 证据与业务 Dashboard；启动和验收说明见下文。
+- [Streamlit Web UI 阶段报告](docs/streamlit_ui_report.md)：实现范围、状态和 API 验收边界。
 
 - 15 个 SKU，180 天每日销售和库存记录。
 - 四份 CSV：商品15行、销售2700行、库存2700行、评价5400行。
@@ -73,6 +75,15 @@ Windows激活命令为 `.venv\Scripts\activate`。数据生成、服务与工具
 `evaluate_retrieval` 默认只评估 LocalHash。云端评估命令会真实调用 Embedding API 并产生额度消耗；执行前需确认 `EMBEDDING_PROVIDER=aliyun`、`EMBEDDING_API_KEY`、`EMBEDDING_BASE_URL` 已设置，并单独授权真实调用。对照两种实现时，可重复传入 `--provider local_hash --provider aliyun`。
 
 `scripts.demo_phase9` 会显式注入 `LocalHashEmbeddings` 和脚本化 Fake Model，不读取 Chat/Embedding 密钥、不调用云端 API。它展示的是实际 Agent Tool Calling Loop、CSV 查询、RAG 检索和同一 Memory 上下文中的连续两轮；Fake Model 的固定回答仅用于演示控制流，不代表 LLM 生成质量。架构和数据流见 [系统架构图](docs/architecture.md)。
+
+Streamlit 需要额外的可选 UI 依赖：
+
+```bash
+.venv/bin/python -m pip install -r requirements-ui.txt
+.venv/bin/python -m streamlit run streamlit_app.py --server.address 127.0.0.1 --server.port 8501
+```
+
+Web UI 默认使用 LocalHash；发送 Chat 消息会调用 `.env` 中配置的真实 Chat 模型。Aliyun Embedding 必须在侧栏勾选确认并点击初始化后才会建立索引；索引在当前浏览器会话缓存，进程重启后需要重建。Qwen Chat 和 Aliyun Embedding 请求可能产生费用。页面展示的工具轨迹和 RAG 片段来自 `AgentResult` 实际返回；失败轮次不会写入 Memory。API Key 保留在本机 Python 服务端，不发送给浏览器代码。
 
 PyCharm选择本项目 `.venv/bin/python`，运行模块scripts.run_agent，工作目录设为项目根目录。单问题命令不跨进程保存历史；`--interactive` 在当前进程会话内复用 Memory。数据截止日固定为2026-09-22，不使用电脑当天。
 

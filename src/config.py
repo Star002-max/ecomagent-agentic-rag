@@ -29,15 +29,21 @@ class EmbeddingSettings:
     dimensions: int = 1024
 
 
-def load_embedding_settings(env_path: Path = PROJECT_ROOT / ".env") -> EmbeddingSettings:
-    """Load embedding settings without requiring cloud credentials offline."""
+def load_embedding_settings(
+    env_path: Path = PROJECT_ROOT / ".env", *, provider_override: str | None = None,
+) -> EmbeddingSettings:
+    """Load embedding settings without requiring cloud credentials offline.
+
+    A UI may select a provider for its own session without mutating process
+    environment variables; credentials still come only from env or .env.
+    """
     local = dotenv_values(env_path) if env_path.exists() else {}
 
     def value(name: str, default: str = "") -> str:
         raw = os.environ[name] if name in os.environ else local.get(name, default)
         return raw.strip() if isinstance(raw, str) else default
 
-    provider = value("EMBEDDING_PROVIDER", "local_hash").lower()
+    provider = (provider_override or value("EMBEDDING_PROVIDER", "local_hash")).lower()
     if provider == "local_hash":
         return EmbeddingSettings(provider="local_hash")
     if provider != "aliyun":
