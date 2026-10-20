@@ -1,7 +1,37 @@
+# Python environments and caches
 .venv/
+venv/
+env/
 __pycache__/
 *.py[cod]
-.env
-.DS_Store
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local credentials (keep the documented placeholder template)
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Logs, coverage output, and local databases/vector stores
+*.log
+logs/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-*
+chroma/
+.chroma/
+
+# OS and IDE files
+.DS_Store
 .idea/

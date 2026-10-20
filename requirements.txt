@@ -1,5 +1,6 @@
 pandas==2.3.3
 langchain-core==1.6.4
+langsmith==0.14.0
 pydantic==2.13.5
 langchain-openai==1.6.5
 python-dotenv==1.2.3
